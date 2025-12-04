@@ -1,0 +1,17 @@
+{
+	"servers": {
+		"contentful-mcp": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@contentful/mcp-server@1.7.2"
+			],
+			"env": {
+				"CONTENTFUL_MANAGEMENT_ACCESS_TOKEN": "CFPAT-nxpDBHx3p6cjdZMY8EFO-9rIbzPjBuBv9E_AoK_zSws",
+				"SPACE_ID": "kqn3kkx1j5v7",
+				"ENVIRONMENT_ID": "master",
+				"CONTENTFUL_HOST": "api.contentful.com"
+			}
+		}
+	}
+}
