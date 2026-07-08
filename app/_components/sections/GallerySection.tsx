@@ -10,6 +10,15 @@ interface GallerySectionProps {
   layout?: 'grid' | 'carousel' | 'masonry';
 }
 
+function getImageAlt(fieldsTitle: unknown, fallback: string): string {
+  if (typeof fieldsTitle === 'string' && fieldsTitle) return fieldsTitle;
+  if (fieldsTitle && typeof fieldsTitle === 'object') {
+    const firstValue = Object.values(fieldsTitle as Record<string, string | undefined>)[0];
+    if (firstValue) return firstValue;
+  }
+  return fallback;
+}
+
 export default function GallerySection({
   title,
   images,
@@ -36,7 +45,7 @@ export default function GallerySection({
             >
               <Image
                 src={`https:${image.fields.file?.url}`}
-                alt={image.fields.title || `Gallery image ${index + 1}`}
+                alt={getImageAlt(image.fields.title, `Gallery image ${index + 1}`)}
                 fill
                 className="object-cover transition-transform group-hover:scale-110"
               />
@@ -53,7 +62,7 @@ export default function GallerySection({
             <div className="relative max-w-4xl max-h-[90vh] w-full h-full">
               <Image
                 src={`https:${images[selectedImage].fields.file?.url}`}
-                alt={images[selectedImage].fields.title || ''}
+                alt={getImageAlt(images[selectedImage].fields.title, 'Gallery image')}
                 fill
                 className="object-contain"
               />
