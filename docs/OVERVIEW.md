@@ -50,9 +50,15 @@ A Contentful `Page` entry has a `sections` array that can mix content types. `ap
 
 `Event` and `Team Member` are **not** page-builder sections — they're standalone content types rendered by their own dedicated routes (`/events`, `/events/[slug]`, `/team`), added 2026-07-11. Before that, these content types existed in Contentful and had fetch helpers in `lib/contentful-api.ts`, but nothing on the front end actually displayed them.
 
+## Content status (as of 2026-07-11)
+
+Live pages: Home, About Us (`/about-us`), Place of Worship (`/about-us/place-of-worship`, coming-soon placeholder), Committee/Team (`/team`, 9 members), Contact Us (`/contact-us`), Activities & Programs (`/activities`). All built from real copy/data supplied by the org — nothing fabricated, and old-site content was deliberately not reused (see below).
+
+Still empty: `/events` — no `Event` entries exist yet. The org has specific dated occurrences (Summer Picnic, Annual General Meeting, etc.) they'll supply dates for later; the general list of recurring religious activities/programs lives on `/activities` instead, since those aren't single dated events.
+
+Contentful Management API access is configured (`CONTENTFUL_MANAGEMENT_TOKEN` in `.env.local`) — content changes now happen via one-off Node scripts using `contentful-management`, run with `node --env-file=.env.local <script>` from inside the repo (needed for `node_modules` resolution). These scripts are throwaway/local only, never committed.
+
 ## Known gaps / next steps
 
-- No `Event` or `Team Member` entries exist in Contentful yet — the new `/events` and `/team` pages render correctly but show an empty state until content is added.
-- No Contentful Management API access configured yet (only Delivery + Preview tokens in `.env.local`) — someone needs to generate one if programmatic content writes are wanted. See [DEPLOYMENT.md](./DEPLOYMENT.md).
 - Old site content couldn't be scraped (renders empty even via headless browser) — content is being supplied directly by the org as it becomes available, not migrated verbatim.
 - `jsowr.org` DNS still points away from Netlify; cutover is a future step once the rebuild is content-complete and approved.

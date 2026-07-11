@@ -55,7 +55,9 @@ Parent items with `children` render as a dropdown in `Navbar.tsx` — the parent
 
 ## Current navigation structure (as of 2026-07, live in Contentful — not derivable from code)
 
-`Site Settings.mainNavigation`: Home (`/`) → About Us (`/about-us`, dropdown) → Events (`/events`) → Contact (`/contact-us`). Donate is a separate button driven by `siteSettings.donateLink`, not part of `mainNavigation`.
+`Site Settings.mainNavigation`: Home (`/`) → About Us (`/about-us`, dropdown) → Events (`/events`) → Activities (`/activities`) → Contact (`/contact-us`). Donate is a separate button driven by `siteSettings.donateLink`, not part of `mainNavigation`.
+
+**Activities** (`/activities`) is a `Page` with a hero + four `contentSection` entries (Religious Activities, Paryushan, Groups, Community Events), each a bullet list. This is distinct from `/events`: it's a static list of recurring practices/programs with no dates, not calendar occurrences — real dated events (Summer Picnic, AGM, etc.) belong in the `event` content type instead once specific dates exist.
 
 **About Us** dropdown children:
 - **Committee** → `/team` (points at the dedicated Team Member listing page, not a `Page` entry — there is no `/about-us/committee` page)
