@@ -6,16 +6,14 @@
 - Build command: `pnpm build`, publish dir: `.next` (see `netlify.toml`). Node 20.
 - Free-plan build minutes are limited, so we want to avoid triggering unnecessary builds.
 
-**Branch build settings to check in the Netlify dashboard** (Site configuration → Build & deploy → Continuous deployment):
-- **Production branch** should be `main` — only this branch should auto-publish to the live Netlify URL / eventually the custom domain.
-- **Branch deploys**: if this is set to "All" or "Let me add individual branches", Netlify will run a full build on *every push* to *every* branch, including WIP feature branches — this burns build minutes fast. Set it to **"None"** (or explicitly list only branches you want previewed) while doing exploratory work on a feature branch.
-- **Deploy previews for pull requests**: also consumes a build per PR/PR-update. Worth disabling or being deliberate about while iterating.
+**Confirmed branch/deploy-context settings** (Site configuration → Build & deploy → Continuous deployment → Branches and deploy contexts, checked 2026-07-11):
+- **Production branch**: `main`.
+- **Branch deploys**: "Deploy only the production branch" — pushing to any other branch (e.g. our feature branches) triggers **no build at all**. Free to push WIP as often as we want.
+- **Deploy Previews**: "Any pull request against your production branch / branch deploy branches" — opening a PR against `main` **does** trigger a build.
 
 ### Our workflow
 
-We work on a local feature branch (currently `rebuild/site-migration`), commit freely, and only merge to `main` (which triggers the real deploy) once a batch of work is ready to review live. Push the feature branch to `origin` for backup/collaboration, but if branch deploys are enabled for all branches, know that each push there also costs a build — turn that off if it's a problem.
-
-Merge to `main` in batches, not after every small change, to keep deploy/build-minute usage down.
+We work on a local feature branch (currently `rebuild/site-migration`), commit and push freely — this costs nothing per the settings above. Two things do cost a build: opening a PR against `main`, and merging to `main` (which deploys to production). So batch work into a branch, and only open a PR / merge once a chunk is ready to go live, rather than round-tripping through PRs for every small change.
 
 ## Contentful
 
