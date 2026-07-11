@@ -51,6 +51,18 @@ Singleton — `getSiteSettings()` just takes the first entry. Fetched once in `a
 ### `navigationItem` (4 fields)
 label, href?, order?, children? (self-referencing Entry[] for submenus)
 
+Parent items with `children` render as a dropdown in `Navbar.tsx` — the parent label itself is also a clickable link to its own `href` (not just a hover trigger), so a parent can have real page content at its own URL in addition to a dropdown.
+
+## Current navigation structure (as of 2026-07, live in Contentful — not derivable from code)
+
+`Site Settings.mainNavigation`: Home (`/`) → About Us (`/about-us`, dropdown) → Events (`/events`) → Contact (`/contact-us`). Donate is a separate button driven by `siteSettings.donateLink`, not part of `mainNavigation`.
+
+**About Us** dropdown children:
+- **Committee** → `/team` (points at the dedicated Team Member listing page, not a `Page` entry — there is no `/about-us/committee` page)
+- **Place of Worship** → `/about-us/place-of-worship` — a real `Page` entry with a "Coming Soon" content section; JSOWR is planning a fundraising campaign for a physical place of worship, this is a placeholder until that launches.
+
+There used to be separate "Our Mission" and "Our History" nav items (`/about-us/mission`, `/about-us/history`) — these were unpublished (not deleted) 2026-07 in favor of a single combined `/about-us` page covering both, reachable by clicking the "About Us" label itself. That `page` entry doesn't exist yet — pending real mission/history copy from the org.
+
 ## Adding a new content type
 
 1. Create it in Contentful (Content model tab).

@@ -66,12 +66,15 @@ function DesktopNavItem({ item, isActive }: { item: NavigationItem & { id: strin
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <button className={`flex items-center space-x-1 transition-colors font-medium ${
-          isParentActive ? 'text-primary-red' : 'text-gray-700 hover:text-primary-red'
-        }`}>
+        <Link
+          href={item.href || '#'}
+          className={`flex items-center space-x-1 transition-colors font-medium ${
+            isParentActive ? 'text-primary-red' : 'text-gray-700 hover:text-primary-red'
+          }`}
+        >
           <span>{item.label}</span>
           <ChevronDown size={16} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-        </button>
+        </Link>
         
         {isOpen && (
           <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-2 z-50">
@@ -124,16 +127,27 @@ function MobileNavItem({ item, onClose, isActive }: { item: NavigationItem & { i
 
     return (
       <div>
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className={`flex items-center justify-between w-full transition-colors font-medium px-2 py-2 ${
-            isParentActive ? 'text-primary-red' : 'text-gray-700 hover:text-primary-red'
+        <div
+          className={`flex items-center justify-between w-full font-medium px-2 py-2 ${
+            isParentActive ? 'text-primary-red' : 'text-gray-700'
           }`}
         >
-          <span>{item.label}</span>
-          <ChevronDown size={16} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-        </button>
-        
+          <Link
+            href={item.href || '#'}
+            className="transition-colors hover:text-primary-red"
+            onClick={onClose}
+          >
+            {item.label}
+          </Link>
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label={`Toggle ${item.label} submenu`}
+            className="p-1 -m-1 transition-colors hover:text-primary-red"
+          >
+            <ChevronDown size={16} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
+
         {isOpen && (
           <div className="pl-4 space-y-2 mt-2">
             {item.children!.map((childEntry) => {
