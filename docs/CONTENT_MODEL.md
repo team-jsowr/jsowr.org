@@ -61,7 +61,7 @@ Parent items with `children` render as a dropdown in `Navbar.tsx` — the parent
 - **Committee** → `/team` (points at the dedicated Team Member listing page, not a `Page` entry — there is no `/about-us/committee` page)
 - **Place of Worship** → `/about-us/place-of-worship` — a real `Page` entry with a "Coming Soon" content section; JSOWR is planning a fundraising campaign for a physical place of worship, this is a placeholder until that launches.
 
-There used to be separate "Our Mission" and "Our History" nav items (`/about-us/mission`, `/about-us/history`) — these were unpublished (not deleted) 2026-07 in favor of a single combined `/about-us` page covering both, reachable by clicking the "About Us" label itself. That `page` entry doesn't exist yet — pending real mission/history copy from the org.
+There used to be separate "Our Mission" and "Our History" nav items (`/about-us/mission`, `/about-us/history`) — these were unpublished (not deleted) 2026-07 in favor of a single combined `/about-us` page covering both, reachable by clicking the "About Us" label itself. That page now exists: a `heroSection` header ("About Us") followed by three `contentSection` entries — "Who We Are", "Our Vision", "Our Purpose" — built from copy provided directly by the org (not the old site, which was flagged as unreliable).
 
 ## Adding a new content type
 
