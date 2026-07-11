@@ -5,6 +5,7 @@ import type {
   Event,
   TeamMember,
   HeroCarouselItem,
+  GallerySection,
 } from '@/types/contentful';
 
 // Helper function to parse Contentful entries
@@ -107,5 +108,22 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
   } catch (error) {
     console.error('Error fetching team members:', error);
     return [];
+  }
+}
+
+// Get a standalone gallery section by title (used outside the page-builder, e.g. on /events)
+export async function getGallerySectionByTitle(title: string): Promise<GallerySection | null> {
+  try {
+    const entries = await contentfulClient.getEntries({
+      content_type: 'gallerySection',
+      'fields.title': title,
+      limit: 1,
+    });
+
+    if (entries.items.length === 0) return null;
+    return parseEntry<GallerySection>(entries.items[0]);
+  } catch (error) {
+    console.error(`Error fetching gallery section "${title}":`, error);
+    return null;
   }
 }

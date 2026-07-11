@@ -24,6 +24,8 @@ title?, content (rich text), backgroundColor?, layout? (`single-column` | `two-c
 ### `gallerySection` (3 fields)
 title?, images (Asset[]), layout? (`grid` | `carousel` | `masonry` — only `grid` is actually implemented in `GallerySection.tsx` as of 2026-07)
 
+A `gallerySection` doesn't have to live inside a `Page.sections` array — `getGallerySectionByTitle(title)` in `lib/contentful-api.ts` fetches one directly by its `title` field for use outside the page-builder. Used on `/events` to show a general community photo gallery (title `"Events Gallery"`) below the events list, unrelated to any specific dated event.
+
 ## Standalone content types (their own routes, not page-builder sections)
 
 ### `event` (10 fields)

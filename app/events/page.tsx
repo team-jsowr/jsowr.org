@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
-import { getEvents } from '@/lib/contentful-api';
+import { getEvents, getGallerySectionByTitle } from '@/lib/contentful-api';
 import EventCard from '@/app/_components/EventCard';
+import GallerySection from '@/app/_components/sections/GallerySection';
 
 export const revalidate = 3600;
 
@@ -10,7 +11,10 @@ export const metadata: Metadata = {
 };
 
 export default async function EventsPage() {
-  const events = await getEvents();
+  const [events, gallery] = await Promise.all([
+    getEvents(),
+    getGallerySectionByTitle('Events Gallery'),
+  ]);
 
   return (
     <main className="py-16 bg-gray-50 min-h-[60vh]">
@@ -34,6 +38,10 @@ export default async function EventsPage() {
           </div>
         )}
       </div>
+
+      {gallery && gallery.images?.length > 0 && (
+        <GallerySection title={gallery.title} images={gallery.images} layout={gallery.layout} />
+      )}
     </main>
   );
 }
