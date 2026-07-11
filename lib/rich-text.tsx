@@ -23,7 +23,7 @@ export const richTextOptions = {
       <ol className="list-decimal list-inside mb-4 space-y-2">{children}</ol>
     ),
     [BLOCKS.LIST_ITEM]: (_node: any, children: any) => (
-      <li className="text-gray-700">{children}</li>
+      <li className="text-gray-700 [&>p]:mb-0 [&>p]:inline">{children}</li>
     ),
   },
 };
