@@ -1,8 +1,9 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Asset } from 'contentful';
+import { shuffleArray } from '@/lib/utils';
 
 interface GallerySectionProps {
   title?: string;
@@ -25,6 +26,13 @@ export default function GallerySection({
   layout = 'grid',
 }: GallerySectionProps) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  // Start with the original order so server and client render the same markup on mount,
+  // then shuffle client-side so each visit shows a different order/position.
+  const [displayImages, setDisplayImages] = useState(images);
+
+  useEffect(() => {
+    setDisplayImages(shuffleArray(images));
+  }, [images]);
 
   if (!images || images.length === 0) return null;
 
@@ -35,9 +43,9 @@ export default function GallerySection({
           {title}
         </h2>
       )}
-      
+
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
-          {images.map((image, index) => (
+          {displayImages.map((image, index) => (
             <div
               key={index}
               className="relative aspect-square cursor-pointer group overflow-hidden rounded-lg"
@@ -61,8 +69,8 @@ export default function GallerySection({
           >
             <div className="relative max-w-4xl max-h-[90vh] w-full h-full">
               <Image
-                src={`https:${images[selectedImage].fields.file?.url}`}
-                alt={getImageAlt(images[selectedImage].fields.title, 'Gallery image')}
+                src={`https:${displayImages[selectedImage].fields.file?.url}`}
+                alt={getImageAlt(displayImages[selectedImage].fields.title, 'Gallery image')}
                 fill
                 className="object-contain"
               />
