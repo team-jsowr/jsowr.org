@@ -50,16 +50,20 @@ export default function Footer({ settings }: FooterProps) {
           <div>
             <h3 className="text-lg font-bold text-primary-yellow mb-4">Contact Us</h3>
             <ul className="space-y-2">
-              <li className="flex items-center text-gray-300 text-sm">
-                <Mail size={16} className="mr-2" />
-                <a href={`mailto:${settings.contactEmail}`} className="hover:text-primary-yellow transition-colors">
-                  {settings.contactEmail}
-                </a>
-              </li>
-              <li className="flex items-start text-gray-300 text-sm">
-                <MapPin size={16} className="mr-2 mt-1 flex-shrink-0" />
-                <span>{settings.address}</span>
-              </li>
+              {settings.contactEmail && (
+                <li className="flex items-center text-gray-300 text-sm">
+                  <Mail size={16} className="mr-2" />
+                  <a href={`mailto:${settings.contactEmail}`} className="hover:text-primary-yellow transition-colors">
+                    {settings.contactEmail}
+                  </a>
+                </li>
+              )}
+              {settings.address && (
+                <li className="flex items-start text-gray-300 text-sm">
+                  <MapPin size={16} className="mr-2 mt-1 flex-shrink-0" />
+                  <span>{settings.address}</span>
+                </li>
+              )}
             </ul>
           </div>
 
