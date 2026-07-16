@@ -76,9 +76,8 @@ Contentful Management API access is configured (`CONTENTFUL_MANAGEMENT_TOKEN` in
 
 - Old site content couldn't be scraped (renders empty even via headless browser) — content is being supplied directly by the org as it becomes available, not migrated verbatim.
 - `jsowr.org` DNS still points away from Netlify; cutover is a future step once the rebuild is content-complete and approved.
-- Real logo: code support exists (`Navbar.tsx` renders `settings.logo` when set), just waiting on the actual logo file from the org.
 
 ### Backlog (explicitly deferred, "good to have" per org feedback 2026-07-11)
 
-- **Gallery as a carousel** — `/events` gallery currently opens a click-to-zoom lightbox per image; org would like left/right arrow navigation between images instead, so visitors don't have to close and reopen each one.
-- **Event albums** — group event photos into named albums (e.g. "Mahavir Janma Vanchan 2025", "Ayambil 2025") with each album having its own sub-gallery, rather than one flat photo pool. Would need a new content type/model change, not just a component change.
+- ~~Gallery as a carousel~~ — done 2026-07-15: lightbox now has left/right arrow buttons, an image counter, and ArrowLeft/ArrowRight/Escape keyboard support (`GallerySection.tsx`).
+- **Event albums** — group event photos into named albums (e.g. "Mahavir Janma Vanchan 2025", "Ayambil 2025") with each album having its own sub-gallery, rather than one flat photo pool. Would need a new content type/model change, not just a component change. Still open.
