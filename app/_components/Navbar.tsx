@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown } from 'lucide-react';
@@ -209,9 +210,20 @@ export default function Navbar({ settings }: NavbarProps) {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-primary-red rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-lg">J</span>
-            </div>
+            {settings.logo?.fields?.file ? (
+              <div className="relative w-10 h-10">
+                <Image
+                  src={`https:${settings.logo.fields.file.url}`}
+                  alt={(settings.logo.fields.title as unknown as string) || settings.siteName}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            ) : (
+              <div className="w-10 h-10 bg-primary-red rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-lg">J</span>
+              </div>
+            )}
             <span className="text-xl font-bold text-gray-900">{settings.siteName}</span>
           </Link>
 
