@@ -70,7 +70,7 @@ Contentful Management API access is configured (`CONTENTFUL_MANAGEMENT_TOKEN` in
 
 **Photo handoff workflow**: `incoming-images/` at the repo root (gitignored except `.gitkeep`) is a drop folder — the org copies photo files in there, then they get uploaded to Contentful via a one-off script using `client.asset.createFromFiles` + `processForAllLocales` + `publish`, and the local copies are deleted once safely in Contentful. Never commit actual image files here; Contentful's Media library is the source of truth for assets, not the git repo.
 
-**Deployed**: `rebuild/site-migration` was merged into `main` and is live on `jsowr.netlify.app` as of 2026-07-11 — confirmed by fetching `/team` and seeing the real committee roster. This was the first merge, and hit a Netlify plan restriction on the way (see "Git contributor limit" in [DEPLOYMENT.md](./DEPLOYMENT.md)) — worth reading before merging again if a new contributor's commits start failing to build.
+**Deployed**: `rebuild/site-migration` was merged into `main` and confirmed live on `jsowr.netlify.app` as of 2026-07-11. That merge hit a Netlify plan restriction on the way (see "Git contributor limit" in [DEPLOYMENT.md](./DEPLOYMENT.md)) — worth reading before merging again if a new contributor's commits start failing to build. Per the org's request, everything since that merge (the Heritage Maroon & Gold theme, gallery lightbox navigation, favicon/404/sitemap/robots.txt/Open Graph metadata, hero image randomization, Donate button hiding) has stayed on `rebuild/site-migration` and is **not live** — only merge to `main` when explicitly asked.
 
 ## Known gaps / next steps
 
