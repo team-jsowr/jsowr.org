@@ -1,7 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Asset } from 'contentful';
 import { shuffleArray } from '@/lib/utils';
 
@@ -33,6 +34,27 @@ export default function GallerySection({
   useEffect(() => {
     setDisplayImages(shuffleArray(images));
   }, [images]);
+
+  const showPrev = useCallback(() => {
+    setSelectedImage((current) =>
+      current === null ? null : (current - 1 + displayImages.length) % displayImages.length
+    );
+  }, [displayImages.length]);
+
+  const showNext = useCallback(() => {
+    setSelectedImage((current) => (current === null ? null : (current + 1) % displayImages.length));
+  }, [displayImages.length]);
+
+  useEffect(() => {
+    if (selectedImage === null) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') showPrev();
+      else if (e.key === 'ArrowRight') showNext();
+      else if (e.key === 'Escape') setSelectedImage(null);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [selectedImage, showPrev, showNext]);
 
   if (!images || images.length === 0) return null;
 
@@ -75,9 +97,42 @@ export default function GallerySection({
                 className="object-contain"
               />
             </div>
+
+            {displayImages.length > 1 && (
+              <>
+                <button
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-primary-white/80 hover:bg-primary-white text-primary-red p-2 rounded-full shadow-lg transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    showPrev();
+                  }}
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft size={28} />
+                </button>
+                <button
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-primary-white/80 hover:bg-primary-white text-primary-red p-2 rounded-full shadow-lg transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    showNext();
+                  }}
+                  aria-label="Next image"
+                >
+                  <ChevronRight size={28} />
+                </button>
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-primary-white/80 text-sm">
+                  {selectedImage + 1} / {displayImages.length}
+                </div>
+              </>
+            )}
+
             <button
-              className="absolute top-4 right-4 text-white text-4xl hover:text-primary-white/70"
-              onClick={() => setSelectedImage(null)}
+              className="absolute top-4 right-4 text-primary-white text-4xl hover:text-primary-white/70"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedImage(null);
+              }}
+              aria-label="Close"
             >
               ×
             </button>
