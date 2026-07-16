@@ -5,8 +5,20 @@ import { getSiteSettings } from "@/lib/contentful-api";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "JSOWR - Jain Society of Waterloo Region",
+  metadataBase: new URL("https://jsowr.org"),
+  title: {
+    default: "Jain Society of Waterloo Region",
+    template: "%s | JSOWR",
+  },
   description: "Promoting Jain values, culture, and community service in the Waterloo Region.",
+  openGraph: {
+    siteName: "Jain Society of Waterloo Region",
+    type: "website",
+    locale: "en_CA",
+  },
+  twitter: {
+    card: "summary",
+  },
 };
 
 export default async function RootLayout({

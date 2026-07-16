@@ -26,6 +26,7 @@ export default function EventCard({ event }: { event: Event }) {
             src={`https:${image.file.url}`}
             alt={(image.title as unknown as string) || event.title}
             fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover group-hover:scale-105 transition-transform"
           />
         ) : (

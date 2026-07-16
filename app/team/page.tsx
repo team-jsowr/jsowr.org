@@ -40,6 +40,7 @@ export default async function TeamPage() {
                         src={`https:${photo.file.url}`}
                         alt={(photo.title as unknown as string) || member.name}
                         fill
+                        sizes="128px"
                         className="object-cover"
                       />
                     ) : (

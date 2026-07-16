@@ -77,6 +77,7 @@ export default function GallerySection({
                 src={`https:${image.fields.file?.url}`}
                 alt={getImageAlt(image.fields.title, `Gallery image ${index + 1}`)}
                 fill
+                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 className="object-cover transition-transform group-hover:scale-110"
               />
             </div>
@@ -94,6 +95,7 @@ export default function GallerySection({
                 src={`https:${displayImages[selectedImage].fields.file?.url}`}
                 alt={getImageAlt(displayImages[selectedImage].fields.title, 'Gallery image')}
                 fill
+                sizes="90vw"
                 className="object-contain"
               />
             </div>

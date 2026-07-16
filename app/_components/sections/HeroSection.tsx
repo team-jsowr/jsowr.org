@@ -85,6 +85,7 @@ export default function HeroSection({ items, title, subtitle, ctaText, ctaLink, 
                 src={`https:${backgroundImage.fields.file?.url}`}
                 alt={backgroundImage.fields.title || title}
                 fill
+                sizes="100vw"
                 className="object-cover"
                 priority
               />
@@ -141,6 +142,7 @@ export default function HeroSection({ items, title, subtitle, ctaText, ctaLink, 
                       src={`https:${imageAsset.file.url}`}
                       alt={imageAsset.title || itemFields.title || 'Hero image'}
                       fill
+                      sizes="100vw"
                       className="object-cover"
                       priority={index === 0}
                     />

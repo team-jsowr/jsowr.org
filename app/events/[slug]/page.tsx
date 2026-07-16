@@ -47,6 +47,7 @@ export default async function EventPage({ params }: EventPageProps) {
                 src={`https:${image.file.url}`}
                 alt={(image.title as unknown as string) || event.title}
                 fill
+                sizes="100vw"
                 className="object-cover"
                 priority
               />

@@ -63,6 +63,21 @@ export async function getPageBySlug(slug: string): Promise<any | null> {
   }
 }
 
+// Get all page slugs (for sitemap generation)
+export async function getAllPageSlugs(): Promise<string[]> {
+  try {
+    const entries = await contentfulClient.getEntries({
+      content_type: 'page',
+      select: ['fields.slug'],
+      limit: 100,
+    });
+    return entries.items.map((item) => (item.fields as any).slug).filter(Boolean);
+  } catch (error) {
+    console.error('Error fetching page slugs:', error);
+    return [];
+  }
+}
+
 // Get all events
 export async function getEvents(limit?: number): Promise<Event[]> {
   try {

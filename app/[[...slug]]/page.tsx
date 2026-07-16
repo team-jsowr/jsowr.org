@@ -25,10 +25,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const fields = page.fields as any;
+  const title = fields.metaTitle || fields.title || 'JSOWR';
+  const description = fields.metaDescription || '';
 
   return {
-    title: fields.metaTitle || fields.title || 'JSOWR',
-    description: fields.metaDescription || '',
+    title,
+    description,
+    openGraph: { title, description },
   };
 }
 
