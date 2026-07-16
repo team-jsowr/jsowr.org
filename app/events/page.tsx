@@ -17,17 +17,17 @@ export default async function EventsPage() {
   ]);
 
   return (
-    <main className="py-16 bg-gray-50 min-h-[60vh]">
+    <main className="py-16 bg-secondary min-h-[60vh]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <h1 className="text-4xl font-bold mb-4 text-gray-900">Events</h1>
-          <p className="text-lg text-gray-600">
+          <h1 className="text-4xl font-bold mb-4 text-foreground">Events</h1>
+          <p className="text-lg text-muted-foreground">
             Join us for prayers, festivals, and community gatherings.
           </p>
         </div>
 
         {events.length === 0 ? (
-          <p className="text-center text-gray-500">
+          <p className="text-center text-muted-foreground">
             No events are posted right now. Check back soon.
           </p>
         ) : (

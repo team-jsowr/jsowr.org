@@ -17,6 +17,16 @@ A rebuild is already in progress in this repo, deployed to Netlify for preview, 
 - **Hosting/CI**: Netlify — builds via `pnpm build`, publishes `.next` (see `netlify.toml`). Connected to GitHub repo `team-jsowr/jsowr.org`, auto-deploys on push (see [DEPLOYMENT.md](./DEPLOYMENT.md) for branch/build-minute considerations).
 - **Domain**: `jsowr.org` is registered/managed through Hostinger. Not yet pointed at Netlify — the live site and the Netlify preview (`jsowr.netlify.app`) are currently separate.
 
+## Visual theme: "Heritage Maroon & Gold"
+
+Chosen 2026-07-15 from 3 mockup directions presented to the org (deep maroon/gold classical vs. bright saffron/indigo festive vs. minimal terracotta modern) — this one was picked for reading as both professional/institutional and distinctly devotional, rather than generic-nonprofit.
+
+**Single source of truth: `app/globals.css`'s `@theme` block.** The primary-red/primary-yellow/primary-green/primary-white/primary-black tokens (deep oxblood, antique gold, muted green, ivory, warm dark brown) and all the shadcn neutral tokens (background/card/secondary/muted/border/ring) are defined there once; every component references those same token names, so changing a hex value in that one file re-themes the whole site. Don't hardcode Tailwind's default `gray-*`/stock `white`/`black` utilities in new components — use the theme tokens (`bg-background`, `text-foreground`, `text-muted-foreground`, `border-border`, etc.) so they stay consistent with whatever the palette is.
+
+Headings (`h1`/`h2`/`h3`) get the serif font (Cormorant Garamond, loaded via Google Fonts in `layout.tsx`) automatically through a base-layer rule in `globals.css` — no need to add a font class per component.
+
+There is no `tailwind.config.ts` — it existed in the original scaffold with stale hardcoded colors but was never actually loaded by Tailwind v4 (v4 uses CSS-first `@theme` config, not the old JS config file, unless explicitly referenced via `@config`, which this project never did). It was deleted 2026-07-15 to avoid misleading anyone into thinking it controlled anything.
+
 ## Repository layout
 
 ```
@@ -60,7 +70,14 @@ Contentful Management API access is configured (`CONTENTFUL_MANAGEMENT_TOKEN` in
 
 **Photo handoff workflow**: `incoming-images/` at the repo root (gitignored except `.gitkeep`) is a drop folder — the org copies photo files in there, then they get uploaded to Contentful via a one-off script using `client.asset.createFromFiles` + `processForAllLocales` + `publish`, and the local copies are deleted once safely in Contentful. Never commit actual image files here; Contentful's Media library is the source of truth for assets, not the git repo.
 
+**Deployed**: `rebuild/site-migration` was merged into `main` and confirmed live on `jsowr.netlify.app` as of 2026-07-11. That merge hit a Netlify plan restriction on the way (see "Git contributor limit" in [DEPLOYMENT.md](./DEPLOYMENT.md)) — worth reading before merging again if a new contributor's commits start failing to build. Per the org's request, everything since that merge (the Heritage Maroon & Gold theme, gallery lightbox navigation, favicon/404/sitemap/robots.txt/Open Graph metadata, hero image randomization, Donate button hiding) has stayed on `rebuild/site-migration` and is **not live** — only merge to `main` when explicitly asked.
+
 ## Known gaps / next steps
 
 - Old site content couldn't be scraped (renders empty even via headless browser) — content is being supplied directly by the org as it becomes available, not migrated verbatim.
 - `jsowr.org` DNS still points away from Netlify; cutover is a future step once the rebuild is content-complete and approved.
+
+### Backlog (explicitly deferred, "good to have" per org feedback 2026-07-11)
+
+- ~~Gallery as a carousel~~ — done 2026-07-15: lightbox now has left/right arrow buttons, an image counter, and ArrowLeft/ArrowRight/Escape keyboard support (`GallerySection.tsx`).
+- **Event albums** — group event photos into named albums (e.g. "Mahavir Janma Vanchan 2025", "Ayambil 2025") with each album having its own sub-gallery, rather than one flat photo pool. Would need a new content type/model change, not just a component change. Still open.

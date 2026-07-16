@@ -18,14 +18,15 @@ export default function EventCard({ event }: { event: Event }) {
   return (
     <Link
       href={`/events/${event.slug}`}
-      className="group block bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
+      className="group block bg-background rounded-lg shadow-sm border border-border border-t-[3px] border-t-primary-yellow overflow-hidden hover:shadow-md transition-shadow"
     >
-      <div className="relative h-48 bg-gray-100">
+      <div className="relative h-48 bg-secondary">
         {image?.file ? (
           <Image
             src={`https:${image.file.url}`}
             alt={(image.title as unknown as string) || event.title}
             fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover group-hover:scale-105 transition-transform"
           />
         ) : (
@@ -33,20 +34,20 @@ export default function EventCard({ event }: { event: Event }) {
         )}
       </div>
       <div className="p-6">
-        <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary-red transition-colors">
+        <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-primary-red transition-colors">
           {event.title}
         </h3>
-        <div className="flex items-center text-sm text-gray-500 mb-1">
+        <div className="flex items-center text-sm text-muted-foreground mb-1">
           <Calendar size={16} className="mr-2 flex-shrink-0" />
           {formatEventDate(event.date)}
         </div>
         {event.location && (
-          <div className="flex items-center text-sm text-gray-500 mb-3">
+          <div className="flex items-center text-sm text-muted-foreground mb-3">
             <MapPin size={16} className="mr-2 flex-shrink-0" />
             {event.location}
           </div>
         )}
-        <p className="text-gray-600 text-sm line-clamp-3">{event.shortDescription}</p>
+        <p className="text-muted-foreground text-sm line-clamp-3">{event.shortDescription}</p>
       </div>
     </Link>
   );

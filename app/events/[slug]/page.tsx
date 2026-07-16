@@ -39,7 +39,7 @@ export default async function EventPage({ params }: EventPageProps) {
 
   return (
     <main>
-      <section className="relative bg-gray-50">
+      <section className="relative bg-secondary">
         <div className="relative h-[360px] md:h-[420px]">
           {image?.file ? (
             <>
@@ -47,18 +47,19 @@ export default async function EventPage({ params }: EventPageProps) {
                 src={`https:${image.file.url}`}
                 alt={(image.title as unknown as string) || event.title}
                 fill
+                sizes="100vw"
                 className="object-cover"
                 priority
               />
-              <div className="absolute inset-0 bg-black/40" />
+              <div className="absolute inset-0 bg-gradient-to-b from-primary-red/50 via-primary-red/40 to-primary-red/75" />
             </>
           ) : (
             <div className="absolute inset-0 bg-primary-red" />
           )}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="max-w-4xl mx-auto px-4 text-center text-white">
+            <div className="max-w-4xl mx-auto px-4 text-center text-primary-white">
               <h1 className="text-3xl md:text-5xl font-bold mb-4">{event.title}</h1>
-              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-gray-100">
+              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-primary-white/90">
                 <span className="flex items-center">
                   <Calendar size={18} className="mr-2" />
                   {formatEventDate(event.date)}
@@ -75,7 +76,7 @@ export default async function EventPage({ params }: EventPageProps) {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 prose prose-lg">
           {renderRichText(event.description)}
         </div>

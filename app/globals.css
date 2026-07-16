@@ -1,34 +1,41 @@
 @import "tailwindcss";
 
+/*
+ * Theme: "Heritage Maroon & Gold" - deep oxblood + antique gold, warm ivory
+ * neutrals, serif headings. Component classes reference the same
+ * primary-red/primary-yellow/etc. tokens as before, so this file is the
+ * single place the whole site's look is controlled from.
+ */
 @theme {
   --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  
-  --color-primary-red: #ff0000;
-  --color-primary-yellow: #ffcf00;
-  --color-primary-green: #00952d;
-  --color-primary-white: #ffffff;
-  --color-primary-black: #000000;
-  
-  --color-background: oklch(100% 0 0);
-  --color-foreground: oklch(9% 0 0);
-  --color-card: oklch(100% 0 0);
-  --color-card-foreground: oklch(9% 0 0);
-  --color-popover: oklch(100% 0 0);
-  --color-popover-foreground: oklch(9% 0 0);
-  --color-primary: oklch(9% 0 0);
-  --color-primary-foreground: oklch(98% 0 0);
-  --color-secondary: oklch(96.1% 0 0);
-  --color-secondary-foreground: oklch(9% 0 0);
-  --color-muted: oklch(96.1% 0 0);
-  --color-muted-foreground: oklch(45.1% 0 0);
-  --color-accent: oklch(96.1% 0 0);
-  --color-accent-foreground: oklch(9% 0 0);
+  --font-family-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+
+  --color-primary-red: #5a1a22;
+  --color-primary-yellow: #c89b3c;
+  --color-primary-green: #3f6b4f;
+  --color-primary-white: #fbf6ec;
+  --color-primary-black: #2b2118;
+
+  --color-background: #fbf6ec;
+  --color-foreground: #2b2118;
+  --color-card: #fffdf8;
+  --color-card-foreground: #2b2118;
+  --color-popover: #fffdf8;
+  --color-popover-foreground: #2b2118;
+  --color-primary: #5a1a22;
+  --color-primary-foreground: #fbf6ec;
+  --color-secondary: #f1e4c8;
+  --color-secondary-foreground: #5a1a22;
+  --color-muted: #efe6d8;
+  --color-muted-foreground: #6b5c4d;
+  --color-accent: #f1e4c8;
+  --color-accent-foreground: #5a1a22;
   --color-destructive: oklch(60.2% 0.177 25.05);
   --color-destructive-foreground: oklch(98% 0 0);
-  --color-border: oklch(89.8% 0 0);
-  --color-input: oklch(89.8% 0 0);
-  --color-ring: oklch(9% 0 0);
-  
+  --color-border: #e4d9c4;
+  --color-input: #e4d9c4;
+  --color-ring: #5a1a22;
+
   --radius-lg: 0.5rem;
   --radius-md: calc(0.5rem - 2px);
   --radius-sm: calc(0.5rem - 4px);
@@ -38,5 +45,9 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   }
 }

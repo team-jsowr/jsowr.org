@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getPageBySlug, getHeroCarouselItems } from '@/lib/contentful-api';
+import { getPageBySlug, getGallerySectionByTitle } from '@/lib/contentful-api';
 import HeroSection from '@/app/_components/sections/HeroSection';
 import ContentSection from '@/app/_components/sections/ContentSection';
 import GallerySection from '@/app/_components/sections/GallerySection';
@@ -25,10 +25,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const fields = page.fields as any;
+  const title = fields.metaTitle || fields.title || 'JSOWR';
+  const description = fields.metaDescription || '';
 
   return {
-    title: fields.metaTitle || fields.title || 'JSOWR',
-    description: fields.metaDescription || '',
+    title,
+    description,
+    openGraph: { title, description },
   };
 }
 
@@ -45,6 +48,14 @@ export default async function CatchAllPage({ params }: PageProps) {
   const fields = page.fields as any;
   const sections = fields.sections || [];
 
+  const hasCarouselHero = sections.some(
+    (s: any) =>
+      s.sys?.contentType?.sys?.id === 'heroSection' &&
+      s.fields?.isCarousel &&
+      (s.fields?.carouselItems?.length || 0) > 0
+  );
+  const heroImagePool = hasCarouselHero ? await getGallerySectionByTitle('Events Gallery') : null;
+
   return (
     <main>
       {/* Render sections if they exist */}
@@ -57,11 +68,12 @@ export default async function CatchAllPage({ params }: PageProps) {
             // Check if this is a carousel or single hero
             const isCarousel = sectionFields.isCarousel;
             const carouselItems = sectionFields.carouselItems || [];
-            
+
             return (
               <HeroSection
                 key={index}
                 items={isCarousel && carouselItems.length > 0 ? carouselItems : undefined}
+                imagePool={isCarousel && carouselItems.length > 0 ? heroImagePool?.images : undefined}
                 title={!isCarousel || carouselItems.length === 0 ? sectionFields.title : undefined}
                 subtitle={!isCarousel || carouselItems.length === 0 ? sectionFields.subtitle : undefined}
                 ctaText={!isCarousel || carouselItems.length === 0 ? sectionFields.ctaText : undefined}
