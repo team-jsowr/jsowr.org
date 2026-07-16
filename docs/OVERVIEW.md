@@ -17,6 +17,16 @@ A rebuild is already in progress in this repo, deployed to Netlify for preview, 
 - **Hosting/CI**: Netlify — builds via `pnpm build`, publishes `.next` (see `netlify.toml`). Connected to GitHub repo `team-jsowr/jsowr.org`, auto-deploys on push (see [DEPLOYMENT.md](./DEPLOYMENT.md) for branch/build-minute considerations).
 - **Domain**: `jsowr.org` is registered/managed through Hostinger. Not yet pointed at Netlify — the live site and the Netlify preview (`jsowr.netlify.app`) are currently separate.
 
+## Visual theme: "Heritage Maroon & Gold"
+
+Chosen 2026-07-15 from 3 mockup directions presented to the org (deep maroon/gold classical vs. bright saffron/indigo festive vs. minimal terracotta modern) — this one was picked for reading as both professional/institutional and distinctly devotional, rather than generic-nonprofit.
+
+**Single source of truth: `app/globals.css`'s `@theme` block.** The primary-red/primary-yellow/primary-green/primary-white/primary-black tokens (deep oxblood, antique gold, muted green, ivory, warm dark brown) and all the shadcn neutral tokens (background/card/secondary/muted/border/ring) are defined there once; every component references those same token names, so changing a hex value in that one file re-themes the whole site. Don't hardcode Tailwind's default `gray-*`/stock `white`/`black` utilities in new components — use the theme tokens (`bg-background`, `text-foreground`, `text-muted-foreground`, `border-border`, etc.) so they stay consistent with whatever the palette is.
+
+Headings (`h1`/`h2`/`h3`) get the serif font (Cormorant Garamond, loaded via Google Fonts in `layout.tsx`) automatically through a base-layer rule in `globals.css` — no need to add a font class per component.
+
+There is no `tailwind.config.ts` — it existed in the original scaffold with stale hardcoded colors but was never actually loaded by Tailwind v4 (v4 uses CSS-first `@theme` config, not the old JS config file, unless explicitly referenced via `@config`, which this project never did). It was deleted 2026-07-15 to avoid misleading anyone into thinking it controlled anything.
+
 ## Repository layout
 
 ```
