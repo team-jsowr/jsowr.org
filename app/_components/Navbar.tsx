@@ -211,16 +211,17 @@ export default function Navbar({ settings }: NavbarProps) {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
             {settings.logo?.fields?.file ? (
-              <div className="relative w-10 h-10">
+              <div className="relative w-12 h-12 shrink-0">
                 <Image
                   src={`https:${settings.logo.fields.file.url}`}
                   alt={(settings.logo.fields.title as unknown as string) || settings.siteName}
                   fill
+                  sizes="48px"
                   className="object-contain"
                 />
               </div>
             ) : (
-              <div className="w-10 h-10 bg-primary-red rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 shrink-0 bg-primary-red rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-lg">J</span>
               </div>
             )}
