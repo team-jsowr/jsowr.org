@@ -70,7 +70,7 @@ function DesktopNavItem({ item, isActive }: { item: NavigationItem & { id: strin
         <Link
           href={item.href || '#'}
           className={`flex items-center space-x-1 transition-colors font-medium ${
-            isParentActive ? 'text-primary-red' : 'text-gray-700 hover:text-primary-red'
+            isParentActive ? 'text-primary-red' : 'text-primary-black/80 hover:text-primary-red'
           }`}
         >
           <span>{item.label}</span>
@@ -78,7 +78,7 @@ function DesktopNavItem({ item, isActive }: { item: NavigationItem & { id: strin
         </Link>
         
         {isOpen && (
-          <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-2 z-50">
+          <div className="absolute top-full left-0 mt-1 w-48 bg-card border border-border rounded-md shadow-lg py-2 z-50">
             {item.children!.map((childEntry) => {
               const child = parseNavItem(childEntry);
               const isChildItemActive = pathname === child.href;
@@ -89,7 +89,7 @@ function DesktopNavItem({ item, isActive }: { item: NavigationItem & { id: strin
                   className={`block px-4 py-2 transition-colors ${
                     isChildItemActive 
                       ? 'bg-primary-red/10 text-primary-red font-medium' 
-                      : 'text-gray-700 hover:bg-gray-100 hover:text-primary-red'
+                      : 'text-primary-black/80 hover:bg-secondary hover:text-primary-red'
                   }`}
                 >
                   {child.label}
@@ -106,7 +106,7 @@ function DesktopNavItem({ item, isActive }: { item: NavigationItem & { id: strin
     <Link
       href={item.href || '#'}
       className={`transition-colors font-medium ${
-        isActive ? 'text-primary-red' : 'text-gray-700 hover:text-primary-red'
+        isActive ? 'text-primary-red' : 'text-primary-black/80 hover:text-primary-red'
       }`}
     >
       {item.label}
@@ -130,7 +130,7 @@ function MobileNavItem({ item, onClose, isActive }: { item: NavigationItem & { i
       <div>
         <div
           className={`flex items-center justify-between w-full font-medium px-2 py-2 ${
-            isParentActive ? 'text-primary-red' : 'text-gray-700'
+            isParentActive ? 'text-primary-red' : 'text-primary-black/80'
           }`}
         >
           <Link
@@ -161,7 +161,7 @@ function MobileNavItem({ item, onClose, isActive }: { item: NavigationItem & { i
                   className={`block transition-colors px-2 py-1 ${
                     isChildItemActive 
                       ? 'text-primary-red font-medium' 
-                      : 'text-gray-600 hover:text-primary-red'
+                      : 'text-primary-black/70 hover:text-primary-red'
                   }`}
                   onClick={onClose}
                 >
@@ -179,7 +179,7 @@ function MobileNavItem({ item, onClose, isActive }: { item: NavigationItem & { i
     <Link
       href={item.href || '#'}
       className={`block transition-colors font-medium px-2 py-2 ${
-        isActive ? 'text-primary-red' : 'text-gray-700 hover:text-primary-red'
+        isActive ? 'text-primary-red' : 'text-primary-black/80 hover:text-primary-red'
       }`}
       onClick={onClose}
     >
@@ -205,7 +205,7 @@ export default function Navbar({ settings }: NavbarProps) {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+    <nav className="sticky top-0 z-50 bg-background border-b-2 border-primary-yellow shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -225,7 +225,7 @@ export default function Navbar({ settings }: NavbarProps) {
                 <span className="text-white font-bold text-lg">J</span>
               </div>
             )}
-            <span className="text-xl font-bold text-gray-900">{settings.siteName}</span>
+            <span className="text-xl font-bold text-foreground">{settings.siteName}</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -236,7 +236,7 @@ export default function Navbar({ settings }: NavbarProps) {
             
             {/* Donate Button - hidden while settings.donateLink is unset */}
             {settings.donateLink && (
-              <Button asChild className="bg-primary-yellow hover:bg-primary-yellow/90 text-gray-900 font-semibold">
+              <Button asChild className="bg-primary-yellow hover:bg-primary-yellow/90 text-primary-red font-semibold">
                 <Link href={settings.donateLink}>Donate</Link>
               </Button>
             )}
@@ -246,7 +246,7 @@ export default function Navbar({ settings }: NavbarProps) {
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-700 hover:text-primary-red transition-colors"
+              className="text-primary-black/80 hover:text-primary-red transition-colors"
               aria-label="Toggle menu"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -256,13 +256,13 @@ export default function Navbar({ settings }: NavbarProps) {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200">
+          <div className="md:hidden py-4 border-t border-border">
             <div className="flex flex-col space-y-2">
               {navItems.map((item) => (
                 <MobileNavItem key={item.id} item={item} onClose={() => setIsOpen(false)} isActive={pathname === item.href} />
               ))}
               {settings.donateLink && (
-                <Button asChild className="bg-primary-yellow hover:bg-primary-yellow/90 text-gray-900 font-semibold mt-4">
+                <Button asChild className="bg-primary-yellow hover:bg-primary-yellow/90 text-primary-red font-semibold mt-4">
                   <Link href={settings.donateLink}>Donate</Link>
                 </Button>
               )}

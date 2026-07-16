@@ -10,6 +10,21 @@ import type { HeroCarouselItem as HeroCarouselItemType } from '@/types/contentfu
 import { Button } from '../ui/button';
 import { shuffleArray } from '@/lib/utils';
 
+function CornerMotif({ flip }: { flip?: boolean }) {
+  return (
+    <svg
+      width="70"
+      height="70"
+      viewBox="0 0 70 70"
+      className={`absolute top-4 z-10 opacity-60 pointer-events-none ${flip ? 'right-4 -scale-x-100' : 'left-4'}`}
+      aria-hidden="true"
+    >
+      <path d="M2 2 Q2 35 35 35 Q2 35 2 68" stroke="#C89B3C" strokeWidth="1.5" fill="none" />
+      <circle cx="2" cy="2" r="4" fill="#C89B3C" />
+    </svg>
+  );
+}
+
 interface HeroSectionProps {
   items?: HeroCarouselItemType[];
   title?: string;
@@ -62,7 +77,7 @@ export default function HeroSection({ items, title, subtitle, ctaText, ctaLink, 
   // Single hero mode (no carousel)
   if (title && !items) {
     return (
-      <section className="relative bg-gray-50">
+      <section className="relative bg-background">
         <div className="relative h-[500px] md:h-[600px]">
           {backgroundImage && (
             <>
@@ -73,19 +88,21 @@ export default function HeroSection({ items, title, subtitle, ctaText, ctaLink, 
                 className="object-cover"
                 priority
               />
-              <div className="absolute inset-0 bg-black/40" />
+              <div className="absolute inset-0 bg-gradient-to-b from-primary-red/50 via-primary-red/40 to-primary-red/75" />
             </>
           )}
           {!backgroundImage && (
             <div className="absolute inset-0 bg-primary-red" />
           )}
+          <CornerMotif />
+          <CornerMotif flip />
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="max-w-4xl mx-auto px-4 text-center text-white">
-              <h1 className="text-4xl md:text-6xl font-bold mb-4">
+            <div className="max-w-4xl mx-auto px-4 text-center text-primary-white">
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 font-serif">
                 {title}
               </h1>
               {subtitle && (
-                <p className="text-xl md:text-2xl mb-8 text-gray-100">
+                <p className="text-xl md:text-2xl mb-8 text-primary-white/90">
                   {subtitle}
                 </p>
               )}
@@ -93,7 +110,7 @@ export default function HeroSection({ items, title, subtitle, ctaText, ctaLink, 
                 <Button
                   asChild
                   size="lg"
-                  className="bg-primary-yellow hover:bg-primary-yellow/90 text-gray-900 font-semibold"
+                  className="bg-primary-yellow hover:bg-primary-yellow/90 text-primary-red font-semibold"
                 >
                   <Link href={ctaLink}>{ctaText}</Link>
                 </Button>
@@ -108,14 +125,14 @@ export default function HeroSection({ items, title, subtitle, ctaText, ctaLink, 
   if (!items || items.length === 0) return null;
 
   return (
-    <section className="relative bg-gray-50">
+    <section className="relative bg-background">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex">
           {(displayItems || items).map((item: any, index: number) => {
             // Handle both direct objects and Contentful link objects
             const itemFields = item.fields || item;
             const imageAsset = itemFields.image?.fields || itemFields.image;
-            
+
             return (
               <div key={index} className="flex-[0_0_100%] min-w-0">
                 <div className="relative h-[500px] md:h-[600px]">
@@ -128,14 +145,16 @@ export default function HeroSection({ items, title, subtitle, ctaText, ctaLink, 
                       priority={index === 0}
                     />
                   )}
-                  <div className="absolute inset-0 bg-black/40" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-primary-red/50 via-primary-red/40 to-primary-red/75" />
+                  <CornerMotif />
+                  <CornerMotif flip />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="max-w-4xl mx-auto px-4 text-center text-white">
-                      <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                    <div className="max-w-4xl mx-auto px-4 text-center text-primary-white">
+                      <h1 className="text-4xl md:text-6xl font-bold mb-4 font-serif">
                         {itemFields.title}
                       </h1>
                       {itemFields.subtitle && (
-                        <p className="text-xl md:text-2xl mb-8 text-gray-100">
+                        <p className="text-xl md:text-2xl mb-8 text-primary-white/90">
                           {itemFields.subtitle}
                         </p>
                       )}
@@ -143,7 +162,7 @@ export default function HeroSection({ items, title, subtitle, ctaText, ctaLink, 
                         <Button
                           asChild
                           size="lg"
-                          className="bg-primary-yellow hover:bg-primary-yellow/90 text-gray-900 font-semibold"
+                          className="bg-primary-yellow hover:bg-primary-yellow/90 text-primary-red font-semibold"
                         >
                           <Link href={itemFields.ctaLink}>{itemFields.ctaText}</Link>
                         </Button>
@@ -161,14 +180,14 @@ export default function HeroSection({ items, title, subtitle, ctaText, ctaLink, 
         <>
           <button
             onClick={scrollPrev}
-            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-900 p-2 rounded-full shadow-lg transition-colors z-10"
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-primary-white/80 hover:bg-primary-white text-primary-red p-2 rounded-full shadow-lg transition-colors z-10"
             aria-label="Previous slide"
           >
             <ChevronLeft size={24} />
           </button>
           <button
             onClick={scrollNext}
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-900 p-2 rounded-full shadow-lg transition-colors z-10"
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-primary-white/80 hover:bg-primary-white text-primary-red p-2 rounded-full shadow-lg transition-colors z-10"
             aria-label="Next slide"
           >
             <ChevronRight size={24} />
@@ -182,7 +201,7 @@ export default function HeroSection({ items, title, subtitle, ctaText, ctaLink, 
                 className={`w-2 h-2 rounded-full transition-all ${
                   index === selectedIndex
                     ? 'bg-primary-yellow w-8'
-                    : 'bg-white/50 hover:bg-white/75'
+                    : 'bg-primary-white/50 hover:bg-primary-white/75'
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
               />

@@ -37,9 +37,9 @@ export default function GallerySection({
   if (!images || images.length === 0) return null;
 
   return (
-    <section className="bg-white py-16 px-4 sm:px-6 lg:px-8">
+    <section className="bg-background py-16 px-4 sm:px-6 lg:px-8">
       {title && (
-        <h2 className="text-3xl md:text-4xl font-bold mb-12 text-gray-900 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold mb-12 text-foreground text-center">
           {title}
         </h2>
       )}
@@ -76,7 +76,7 @@ export default function GallerySection({
               />
             </div>
             <button
-              className="absolute top-4 right-4 text-white text-4xl hover:text-gray-300"
+              className="absolute top-4 right-4 text-white text-4xl hover:text-primary-white/70"
               onClick={() => setSelectedImage(null)}
             >
               ×
