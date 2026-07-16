@@ -5,8 +5,10 @@ import { useState, useEffect, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import type { Asset } from 'contentful';
 import type { HeroCarouselItem as HeroCarouselItemType } from '@/types/contentful';
 import { Button } from '../ui/button';
+import { shuffleArray } from '@/lib/utils';
 
 interface HeroSectionProps {
   items?: HeroCarouselItemType[];
@@ -15,11 +17,30 @@ interface HeroSectionProps {
   ctaText?: string;
   ctaLink?: string;
   backgroundImage?: any;
+  /** Pool of images to randomly draw from for each slide's photo on every visit, keeping each slide's own title/subtitle/CTA. */
+  imagePool?: Asset[];
 }
 
-export default function HeroSection({ items, title, subtitle, ctaText, ctaLink, backgroundImage }: HeroSectionProps) {
+export default function HeroSection({ items, title, subtitle, ctaText, ctaLink, backgroundImage, imagePool }: HeroSectionProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [selectedIndex, setSelectedIndex] = useState(0);
+  // Start with the original items so server and client render the same markup on mount,
+  // then swap in random images from the pool client-side so each visit looks different.
+  const [displayItems, setDisplayItems] = useState(items);
+
+  useEffect(() => {
+    if (!items || items.length === 0 || !imagePool || imagePool.length === 0) return;
+    const randomImages = shuffleArray(imagePool).slice(0, items.length);
+    setDisplayItems(
+      items.map((item: any, index: number) => ({
+        ...item,
+        fields: item.fields
+          ? { ...item.fields, image: randomImages[index % randomImages.length] }
+          : { ...item, image: randomImages[index % randomImages.length] },
+      }))
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items, imagePool]);
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
@@ -90,7 +111,7 @@ export default function HeroSection({ items, title, subtitle, ctaText, ctaLink, 
     <section className="relative bg-gray-50">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex">
-          {items.map((item: any, index: number) => {
+          {(displayItems || items).map((item: any, index: number) => {
             // Handle both direct objects and Contentful link objects
             const itemFields = item.fields || item;
             const imageAsset = itemFields.image?.fields || itemFields.image;
