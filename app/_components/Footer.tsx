@@ -38,11 +38,13 @@ export default function Footer({ settings }: FooterProps) {
                   Our Team
                 </Link>
               </li>
-              <li>
-                <Link href="/donate" className="text-gray-300 hover:text-primary-yellow transition-colors text-sm">
-                  Donate
-                </Link>
-              </li>
+              {settings.donateLink && (
+                <li>
+                  <Link href={settings.donateLink} className="text-gray-300 hover:text-primary-yellow transition-colors text-sm">
+                    Donate
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
 

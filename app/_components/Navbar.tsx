@@ -221,10 +221,12 @@ export default function Navbar({ settings }: NavbarProps) {
               <DesktopNavItem key={item.id} item={item} isActive={pathname === item.href} />
             ))}
             
-            {/* Donate Button */}
-            <Button asChild className="bg-primary-yellow hover:bg-primary-yellow/90 text-gray-900 font-semibold">
-              <Link href={settings.donateLink || '/donate'}>Donate</Link>
-            </Button>
+            {/* Donate Button - hidden while settings.donateLink is unset */}
+            {settings.donateLink && (
+              <Button asChild className="bg-primary-yellow hover:bg-primary-yellow/90 text-gray-900 font-semibold">
+                <Link href={settings.donateLink}>Donate</Link>
+              </Button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -246,9 +248,11 @@ export default function Navbar({ settings }: NavbarProps) {
               {navItems.map((item) => (
                 <MobileNavItem key={item.id} item={item} onClose={() => setIsOpen(false)} isActive={pathname === item.href} />
               ))}
-              <Button asChild className="bg-primary-yellow hover:bg-primary-yellow/90 text-gray-900 font-semibold mt-4">
-                <Link href={settings.donateLink || '/donate'}>Donate</Link>
-              </Button>
+              {settings.donateLink && (
+                <Button asChild className="bg-primary-yellow hover:bg-primary-yellow/90 text-gray-900 font-semibold mt-4">
+                  <Link href={settings.donateLink}>Donate</Link>
+                </Button>
+              )}
             </div>
           </div>
         )}
