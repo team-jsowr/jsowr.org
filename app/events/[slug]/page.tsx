@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
   }
 
   return {
-    title: event.metaTitle || `${event.title} | JSOWR`,
+    title: event.metaTitle || event.title,
     description: event.metaDescription || event.shortDescription,
   };
 }

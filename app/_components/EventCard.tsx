@@ -4,11 +4,15 @@ import { Calendar, MapPin } from 'lucide-react';
 import type { Event } from '@/types/contentful';
 
 function formatEventDate(date: string) {
+  // Contentful gives a date-only string (e.g. "2026-09-08"), which Date() parses as UTC
+  // midnight. Rendering in the viewer's local timezone would shift it back a day for
+  // anyone west of UTC, so force the formatter to read it back as UTC too.
   return new Date(date).toLocaleDateString('en-CA', {
     weekday: 'short',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone: 'UTC',
   });
 }
 
