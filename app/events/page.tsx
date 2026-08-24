@@ -6,7 +6,7 @@ import GallerySection from '@/app/_components/sections/GallerySection';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Events | JSOWR',
+  title: 'Events',
   description: 'Upcoming prayers, festivals, and community gatherings hosted by the Jain Society of Waterloo Region.',
 };
 

@@ -6,7 +6,7 @@ import { getTeamMembers } from '@/lib/contentful-api';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Our Team | JSOWR',
+  title: 'Our Team',
   description: 'Meet the committee and leadership of the Jain Society of Waterloo Region.',
 };
 
