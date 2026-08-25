@@ -1,8 +1,11 @@
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
-import { BLOCKS, INLINES } from '@contentful/rich-text-types';
+import { BLOCKS, INLINES, MARKS } from '@contentful/rich-text-types';
 import type { Document } from '@contentful/rich-text-types';
 
 export const richTextOptions = {
+  renderMark: {
+    [MARKS.BOLD]: (text: any) => <strong className="font-semibold text-primary-red">{text}</strong>,
+  },
   renderNode: {
     [INLINES.HYPERLINK]: (node: any, children: any) => (
       <a

@@ -1,13 +1,54 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
+import { BLOCKS } from '@contentful/rich-text-types';
+import type { Document } from '@contentful/rich-text-types';
 import { Calendar, MapPin } from 'lucide-react';
 import { getEventBySlug } from '@/lib/contentful-api';
-import { renderRichText } from '@/lib/rich-text';
+import { richTextOptions } from '@/lib/rich-text';
 import GallerySection from '@/app/_components/sections/GallerySection';
 import { formatEventDate } from '@/app/_components/EventCard';
 
 export const revalidate = 3600;
+
+interface ScheduleDay {
+  heading: any;
+  body: any[];
+}
+
+/**
+ * Splits a rich-text description into any intro content before the first H3,
+ * plus one group per H3 (used for multi-day schedules like Paryushan) so each
+ * day can be rendered as its own card instead of a flat wall of text.
+ */
+function splitSchedule(doc: Document): { intro: any[]; days: ScheduleDay[] } {
+  const days: ScheduleDay[] = [];
+  const intro: any[] = [];
+  let current: ScheduleDay | null = null;
+
+  for (const node of doc.content) {
+    if (node.nodeType === BLOCKS.HEADING_3) {
+      if (current) days.push(current);
+      current = { heading: node, body: [] };
+    } else if (current) {
+      current.body.push(node);
+    } else {
+      intro.push(node);
+    }
+  }
+  if (current) days.push(current);
+
+  return { intro, days };
+}
+
+function headingText(node: any): string {
+  return (node.content || []).map((c: any) => c.value || '').join('');
+}
+
+function renderNodes(nodes: any[]) {
+  return documentToReactComponents({ nodeType: 'document', data: {}, content: nodes } as Document, richTextOptions);
+}
 
 interface EventPageProps {
   params: Promise<{ slug: string }>;
@@ -36,6 +77,7 @@ export default async function EventPage({ params }: EventPageProps) {
   }
 
   const image = event.featuredImage?.fields;
+  const { intro, days } = splitSchedule(event.description);
 
   return (
     <main>
@@ -77,8 +119,31 @@ export default async function EventPage({ params }: EventPageProps) {
       </section>
 
       <section className="py-16 bg-background">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 prose prose-lg">
-          {renderRichText(event.description)}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {intro.length > 0 && (
+            <div className="prose prose-lg max-w-none mb-10">{renderNodes(intro)}</div>
+          )}
+
+          {days.length > 0 && (
+            <div className="space-y-4">
+              {days.map((day, index) => (
+                <div
+                  key={index}
+                  className="rounded-lg border border-border border-l-4 border-l-primary-yellow bg-card shadow-sm overflow-hidden"
+                >
+                  <div className="bg-secondary px-5 py-3 flex items-center gap-2">
+                    <Calendar size={18} className="text-primary-red shrink-0" />
+                    <h3 className="font-serif font-semibold text-lg text-foreground">
+                      {headingText(day.heading)}
+                    </h3>
+                  </div>
+                  <div className="px-5 py-4 prose max-w-none [&_p]:mb-2 [&_p:last-child]:mb-0">
+                    {renderNodes(day.body)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
