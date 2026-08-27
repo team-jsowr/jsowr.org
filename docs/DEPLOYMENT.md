@@ -13,7 +13,13 @@
 
 ### Our workflow
 
-We work on a local feature branch (currently `rebuild/site-migration`), commit and push freely — this costs nothing per the settings above. Two things do cost a build: opening a PR against `main`, and merging to `main` (which deploys to production). So batch work into a branch, and only open a PR / merge once a chunk is ready to go live, rather than round-tripping through PRs for every small change. First real merge to `main` happened 2026-07-11 (fast-forward, `rebuild/site-migration` → `main`).
+We work on a local feature branch (currently `rebuild/site-migration`), commit and push freely — this costs nothing per the settings above. Two things do cost a build: opening a PR against `main`, and merging to `main` (which deploys to production). So batch work into a branch, and only open a PR / merge once a chunk is ready to go live, rather than round-tripping through PRs for every small change.
+
+In practice this has meant several incremental PRs from the same long-lived `rebuild/site-migration` branch (#3, #4, #5 so far), each **squash-merged** by the org directly on GitHub's web UI. This environment has no `gh` CLI and no GitHub API token, so PRs can't be created programmatically — the flow is: push the branch, hand the org the compare URL (`https://github.com/team-jsowr/jsowr.org/compare/main...rebuild/site-migration?expand=1`), they open and merge it themselves.
+
+**Squash-merge causes the next PR to show phantom conflicts.** Because each merge squashes the branch's commits into one new commit on `main`, `main` and `rebuild/site-migration` never share real ancestry again, even though the file content matches. GitHub will show "Can't automatically merge" on the next compare, and `git log main..rebuild/site-migration` will list commits that are already-merged-in-substance. Two things to know:
+- **Don't trust the commit-ancestry check** (`git merge-base --is-ancestor` / `git log A..B`) to tell you what's actually live — it'll say "diverged" even when nothing real is outstanding. Use `git diff --stat origin/main rebuild/site-migration` instead; empty output means the branches are content-identical regardless of what the commit graph looks like.
+- **Fix the phantom conflict** before the org opens the next PR by running `git merge origin/main` on the feature branch locally, resolving whatever trivial conflicts come up (usually just re-picking your side on lines your commits touched that the squash-commit also touched), then pushing. This makes `origin/main` a real ancestor of the feature branch again, so the next compare is clean.
 
 ### Git contributor limit (Starter/free plan) — 2026-07-11 incident
 

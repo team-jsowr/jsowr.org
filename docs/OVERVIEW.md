@@ -33,9 +33,12 @@ There is no `tailwind.config.ts` — it existed in the original scaffold with st
 app/
   [[...slug]]/page.tsx     # Catch-all: renders a Contentful "Page" entry by slug, section by section
   events/page.tsx          # Events listing (explicit route — wins over the catch-all for exact match)
-  events/[slug]/page.tsx   # Single event detail
+  events/[slug]/page.tsx   # Single event detail; also splits multi-day schedules into per-day cards
   team/page.tsx            # Team/committee listing
   layout.tsx                # Fetches Site Settings, renders Navbar + Footer around every page
+  not-found.tsx              # Themed 404 page
+  sitemap.ts, robots.ts       # Dynamic sitemap (pulls real Page slugs from Contentful) + robots.txt
+  icon.png                    # Favicon, generated from the real logo
   _components/
     Navbar.tsx, Footer.tsx  # Driven by Contentful "Site Settings" (nav items, socials, contact info)
     sections/                # Renderers for each Contentful "section" content type used by the page builder
@@ -60,22 +63,31 @@ A Contentful `Page` entry has a `sections` array that can mix content types. `ap
 
 `Event` and `Team Member` are **not** page-builder sections — they're standalone content types rendered by their own dedicated routes (`/events`, `/events/[slug]`, `/team`), added 2026-07-11. Before that, these content types existed in Contentful and had fetch helpers in `lib/contentful-api.ts`, but nothing on the front end actually displayed them.
 
-## Content status (as of 2026-07-11)
+## Content status (as of 2026-08-27)
 
-Live pages: Home, About Us (`/about-us`), Place of Worship (`/about-us/place-of-worship`, coming-soon placeholder), Committee/Team (`/team`, 9 members), Contact Us (`/contact-us`), Activities & Programs (`/activities`). All built from real copy/data supplied by the org — nothing fabricated, and old-site content was deliberately not reused (see below).
+Live pages: Home, About Us (`/about-us`), Place of Worship (`/about-us/place-of-worship`, coming-soon placeholder, currently **unlinked from the nav** — see below), Committee/Team (`/team`, 9 members, 8 with real photos — only Anand Shah still has an initials fallback), Contact Us (`/contact-us`), Activities & Programs (`/activities`). All built from real copy/data supplied by the org — nothing fabricated, and old-site content was deliberately not reused.
 
-`/events` has a 12-photo general community gallery (`gallerySection` titled "Events Gallery", fetched directly by title rather than through the page-builder — see `docs/CONTENT_MODEL.md`) but no dated `Event` entries yet. The org has specific dated occurrences (Summer Picnic, Annual General Meeting, etc.) they'll supply dates for later; the general list of recurring religious activities/programs lives on `/activities` instead, since those aren't single dated events.
+`/events` now has its first real dated event: **Paryushan Mahaparv 2026** (Sept 8–16, 2026), with a full day-by-day schedule sourced from the org's own flyer, rendered as per-day cards (see "Multi-day event schedules" in `docs/CONTENT_MODEL.md`) and a featured image. It also still carries the 12-photo general community gallery (`gallerySection` titled "Events Gallery", fetched directly by title — see `docs/CONTENT_MODEL.md`).
 
-Contentful Management API access is configured (`CONTENTFUL_MANAGEMENT_TOKEN` in `.env.local`) — content changes now happen via one-off Node scripts using `contentful-management`, run with `node --env-file=.env.local <script>` from inside the repo (needed for `node_modules` resolution). These scripts are throwaway/local only, never committed.
+**Nav changes since launch**: "Place of Worship" was removed from the About Us dropdown per org request (2026-08) — the page itself is still published and reachable by direct URL, just not linked from the menu. A **"Membership"** top-level nav item was requested but not yet built — still waiting on the org for what that page should actually say (benefits, fees, how to apply) before creating it, to avoid shipping a nav link to placeholder content.
+
+Contentful Management API access is configured (`CONTENTFUL_MANAGEMENT_TOKEN` in `.env.local`) — content changes happen via one-off Node scripts using `contentful-management`, run with `node --env-file=.env.local <script>` from inside the repo (needed for `node_modules` resolution). These scripts are throwaway/local only, never committed.
 
 **Photo handoff workflow**: `incoming-images/` at the repo root (gitignored except `.gitkeep`) is a drop folder — the org copies photo files in there, then they get uploaded to Contentful via a one-off script using `client.asset.createFromFiles` + `processForAllLocales` + `publish`, and the local copies are deleted once safely in Contentful. Never commit actual image files here; Contentful's Media library is the source of truth for assets, not the git repo.
 
-**Deployed**: `rebuild/site-migration` was merged into `main` and confirmed live on `jsowr.netlify.app` as of 2026-07-11. That merge hit a Netlify plan restriction on the way (see "Git contributor limit" in [DEPLOYMENT.md](./DEPLOYMENT.md)) — worth reading before merging again if a new contributor's commits start failing to build. Per the org's request, everything since that merge (the Heritage Maroon & Gold theme, gallery lightbox navigation, favicon/404/sitemap/robots.txt/Open Graph metadata, hero image randomization, Donate button hiding) has stayed on `rebuild/site-migration` and is **not live** — only merge to `main` when explicitly asked.
+**Cropping lessons learned** (worth reading before processing more photos):
+- Sharp's `sharp.strategy.attention` (saliency-based auto-crop) works well most of the time but **can get fooled by busy backgrounds** — it picked autumn leaves over a person's face once, and a lake's rock/water texture over a face another time, both resulting in the face being nearly cropped out. Always render a preview crop and visually check it before uploading; don't trust attention-crop blindly for portraits with cluttered backgrounds.
+- A **tall portrait photo cropped into a very wide hero banner** (the event detail page's hero is full-viewport-width but only ~360-420px tall, so on wide monitors it's a ~4.5:1 crop) is a much bigger mismatch than a circular avatar crop — both center-crop and attention-crop landed on the wrong region entirely (torso/hands instead of face). Fix was a manually-verified square crop with generous margin around the subject, checked against *both* the extreme-wide desktop ratio and the near-square mobile ratio before committing.
+- **HEIC files can silently arrive corrupted** (decoder errors, suspiciously small file size) — if `sharp` fails to decode one, ask for a JPEG/PNG re-export rather than trying to force it.
+
+**Deployed**: as of 2026-08-27, `main` and `rebuild/site-migration` are fully in sync (zero file differences) — everything described in this doc is live on `jsowr.netlify.app`, across several incrementally-merged PRs (the org merges these directly on GitHub's web UI, since this environment has no `gh` CLI or API token — see [DEPLOYMENT.md](./DEPLOYMENT.md)). Don't assume the feature branch is ahead of `main` just because `git log main..rebuild/site-migration` shows commits — GitHub squash-merges collapse each PR into one new commit on `main`, so the branch-vs-branch commit graph looks perpetually diverged even when the actual file content is identical. Always check with `git diff --stat origin/main rebuild/site-migration` (real content diff) rather than the commit-ancestry check before concluding something is or isn't live.
 
 ## Known gaps / next steps
 
 - Old site content couldn't be scraped (renders empty even via headless browser) — content is being supplied directly by the org as it becomes available, not migrated verbatim.
 - `jsowr.org` DNS still points away from Netlify; cutover is a future step once the rebuild is content-complete and approved.
+- **Membership page** — top-level nav item requested by the org, not yet built. Needs content: benefits, fees, how to apply, eligibility.
+- **Anand Shah** (President) still has no committee photo.
 
 ### Backlog (explicitly deferred, "good to have" per org feedback 2026-07-11)
 
