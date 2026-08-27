@@ -37,10 +37,16 @@ Rendered at `/events` (list) and `/events/[slug]` (detail).
 
 **Multi-day event schedules** (e.g. Paryushan Mahaparv): write the `description` rich text as an intro (paragraphs before the first heading), then one `Heading 3` per day followed by that day's paragraphs — e.g. `### Tuesday, September 8, 2026` then paragraphs starting `**Morning (8:30 AM – 12:30 PM):** ...` and `**Evening (7:00 PM – 10:30 PM):** ...` with the time-range prefix bolded. `app/events/[slug]/page.tsx`'s `splitSchedule()` helper walks the rich-text `content` array and groups everything between consecutive H3s into its own card (gold accent border, header bar with a calendar icon) instead of rendering it as a flat wall of text — this only works if the content actually follows the "H3 = day boundary" convention, so keep using it for future multi-day events rather than inventing a different structure.
 
-### `teamMember` (7 fields)
-name, role, bio?, photo?, email?, phone?, order?
+### `teamMember` (9 fields)
+name, role, bio?, photo?, email?, phone?, order?, groups? (Array<Symbol>, values `"Committee"` / `"Board of Directors"`), boardOrder?
 
-Rendered at `/team`. 9 members currently: President, Vice President, Secretary, Treasurer, 5 Members. 8 of 9 have real photos (square-cropped, see cropping lessons in `docs/OVERVIEW.md`); only the President is still on the initials-avatar fallback. One name correction so far: "Dhavan Shah" → "Dhavan Mehta" (2026-08).
+One `teamMember` entry can represent a person who sits on **both** the Committee and the Board of Directors (e.g. Anand Shah, Jignesh Shah, Dhara Vora) — `groups` is how a single entry appears on more than one listing page without duplicating their name/photo/bio. `getCommitteeMembers()` and `getBoardMembers()` in `lib/contentful-api.ts` each query `fields.groups[in]` for their own group.
+
+**Why two separate order fields**: `order` drives `/team` (Committee needs President/VP/Secretary/Treasurer first, then Members), `boardOrder` drives `/board` independently. They're deliberately decoupled — reusing one field for both would mean re-ordering one page silently re-orders the other for anyone who's in both groups.
+
+**Why `role` isn't used for the Board page's displayed title**: a shared entry's `role` field says "President" (for Committee purposes) — the Board page doesn't want to show that, it wants a uniform "Board Member" for everyone regardless of their Committee title. `app/_components/MemberGrid.tsx` (shared by both `/team` and `/board`) takes an optional `roleLabel` prop that overrides the per-member `role` field when set; `/board` passes `roleLabel="Board Member"`, `/team` doesn't pass it (shows each member's real `role`).
+
+Rendered at `/team` (Committee, 9 members: President, Vice President, Secretary, Treasurer, 5 Members) and `/board` (Board of Directors, 5 members, added 2026-08). 8 of 9 Committee members and 3 of 5 Board members have real photos (square-cropped, see cropping lessons in `docs/OVERVIEW.md`); the rest are on the initials-avatar fallback pending photos. One name correction so far: "Dhavan Shah" → "Dhavan Mehta" (2026-08).
 
 ## Site-wide content types
 
@@ -65,7 +71,8 @@ Parent items with `children` render as a dropdown in `Navbar.tsx` — the parent
 
 **Activities** (`/activities`) is a `Page` with a hero + four `contentSection` entries (Religious Activities, Paryushan, Groups, Community Events), each a bullet list. This is distinct from `/events`: it's a static list of recurring practices/programs with no dates, not calendar occurrences — real dated events (Paryushan Mahaparv, AGM, etc.) belong in the `event` content type instead once specific dates exist.
 
-**About Us** dropdown children:
+**About Us** dropdown children, in order:
+- **Board of Directors** → `/board` (dedicated Board listing page, added 2026-08 — see `teamMember`'s `groups`/`boardOrder` fields above)
 - **Committee** → `/team` (points at the dedicated Team Member listing page, not a `Page` entry — there is no `/about-us/committee` page)
 - ~~**Place of Worship**~~ → removed from the dropdown 2026-08 per org request. The `Page` entry at `/about-us/place-of-worship` (a "Coming Soon" notice about the fundraising campaign) is still published and reachable by direct URL — just unlinked from `About Us`'s `children` field. Re-adding it to the menu later is a one-field Contentful edit, no code change.
 

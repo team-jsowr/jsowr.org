@@ -34,7 +34,8 @@ app/
   [[...slug]]/page.tsx     # Catch-all: renders a Contentful "Page" entry by slug, section by section
   events/page.tsx          # Events listing (explicit route — wins over the catch-all for exact match)
   events/[slug]/page.tsx   # Single event detail; also splits multi-day schedules into per-day cards
-  team/page.tsx            # Team/committee listing
+  team/page.tsx            # Committee listing
+  board/page.tsx           # Board of Directors listing (shares MemberGrid + teamMember entries with team/)
   layout.tsx                # Fetches Site Settings, renders Navbar + Footer around every page
   not-found.tsx              # Themed 404 page
   sitemap.ts, robots.ts       # Dynamic sitemap (pulls real Page slugs from Contentful) + robots.txt
@@ -44,9 +45,10 @@ app/
     sections/                # Renderers for each Contentful "section" content type used by the page builder
     ui/                       # Generic shadcn-style primitives (Button, Card, Switch)
     EventCard.tsx
+    MemberGrid.tsx            # Shared card grid for both team/ and board/ (avatar/initials, name, role, contact icons)
 lib/
   contentful.ts             # Contentful Delivery API client (read-only)
-  contentful-api.ts         # Typed fetch helpers (getPageBySlug, getEvents, getTeamMembers, getSiteSettings, ...)
+  contentful-api.ts         # Typed fetch helpers (getPageBySlug, getEvents, getCommitteeMembers, getBoardMembers, getSiteSettings, ...)
   rich-text.tsx              # Shared Contentful rich-text -> React renderer, used by ContentSection and event detail
 types/contentful.ts          # Hand-written TS types mirroring the Contentful content model (kept in sync manually)
 ```
@@ -65,7 +67,9 @@ A Contentful `Page` entry has a `sections` array that can mix content types. `ap
 
 ## Content status (as of 2026-08-27)
 
-Live pages: Home, About Us (`/about-us`), Place of Worship (`/about-us/place-of-worship`, coming-soon placeholder, currently **unlinked from the nav** — see below), Committee/Team (`/team`, 9 members, 8 with real photos — only Anand Shah still has an initials fallback), Contact Us (`/contact-us`), Activities & Programs (`/activities`). All built from real copy/data supplied by the org — nothing fabricated, and old-site content was deliberately not reused.
+Live pages: Home, About Us (`/about-us`), Place of Worship (`/about-us/place-of-worship`, coming-soon placeholder, currently **unlinked from the nav** — see below), Committee/Team (`/team`, 9 members, 8 with real photos), Board of Directors (`/board`, added 2026-08, 5 members — Anand Shah, Jignesh Shah, and Dhara Vora also sit on Committee and share the same `teamMember` entries, see `docs/CONTENT_MODEL.md`), Contact Us (`/contact-us`), Activities & Programs (`/activities`). All built from real copy/data supplied by the org — nothing fabricated, and old-site content was deliberately not reused.
+
+Photos still pending (initials fallback until provided): **Anand Shah** (shows on both Committee and Board) and **Sohil Sheth** (Board only). Parul Sutaria (Board) is intentionally initials-only per the org.
 
 `/events` now has its first real dated event: **Paryushan Mahaparv 2026** (Sept 8–16, 2026), with a full day-by-day schedule sourced from the org's own flyer, rendered as per-day cards (see "Multi-day event schedules" in `docs/CONTENT_MODEL.md`) and a featured image. It also still carries the 12-photo general community gallery (`gallerySection` titled "Events Gallery", fetched directly by title — see `docs/CONTENT_MODEL.md`).
 
@@ -80,14 +84,14 @@ Contentful Management API access is configured (`CONTENTFUL_MANAGEMENT_TOKEN` in
 - A **tall portrait photo cropped into a very wide hero banner** (the event detail page's hero is full-viewport-width but only ~360-420px tall, so on wide monitors it's a ~4.5:1 crop) is a much bigger mismatch than a circular avatar crop — both center-crop and attention-crop landed on the wrong region entirely (torso/hands instead of face). Fix was a manually-verified square crop with generous margin around the subject, checked against *both* the extreme-wide desktop ratio and the near-square mobile ratio before committing.
 - **HEIC files can silently arrive corrupted** (decoder errors, suspiciously small file size) — if `sharp` fails to decode one, ask for a JPEG/PNG re-export rather than trying to force it.
 
-**Deployed**: as of 2026-08-27, `main` and `rebuild/site-migration` are fully in sync (zero file differences) — everything described in this doc is live on `jsowr.netlify.app`, across several incrementally-merged PRs (the org merges these directly on GitHub's web UI, since this environment has no `gh` CLI or API token — see [DEPLOYMENT.md](./DEPLOYMENT.md)). Don't assume the feature branch is ahead of `main` just because `git log main..rebuild/site-migration` shows commits — GitHub squash-merges collapse each PR into one new commit on `main`, so the branch-vs-branch commit graph looks perpetually diverged even when the actual file content is identical. Always check with `git diff --stat origin/main rebuild/site-migration` (real content diff) rather than the commit-ancestry check before concluding something is or isn't live.
+**Deployed**: `main` and `rebuild/site-migration` were fully in sync as of 2026-08-27 (see [DEPLOYMENT.md](./DEPLOYMENT.md) for the squash-merge/content-diff caveat), but the Board of Directors work (new `groups`/`boardOrder` fields, `/board` route, `MemberGrid` extraction) landed on `rebuild/site-migration` *after* that sync, and the org explicitly asked not to merge yet — so as of this writing, `/board` and the Committee-page refactor are **not live**, even though the underlying Contentful content (which isn't gated by git) already is. Check `git diff --stat origin/main rebuild/site-migration` before assuming otherwise.
 
 ## Known gaps / next steps
 
 - Old site content couldn't be scraped (renders empty even via headless browser) — content is being supplied directly by the org as it becomes available, not migrated verbatim.
 - `jsowr.org` DNS still points away from Netlify; cutover is a future step once the rebuild is content-complete and approved.
 - **Membership page** — top-level nav item requested by the org, not yet built. Needs content: benefits, fees, how to apply, eligibility.
-- **Anand Shah** (President) still has no committee photo.
+- Photos still pending for **Anand Shah** and **Sohil Sheth** (see "Content status" above).
 
 ### Backlog (explicitly deferred, "good to have" per org feedback 2026-07-11)
 
