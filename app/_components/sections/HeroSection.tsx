@@ -78,7 +78,7 @@ export default function HeroSection({ items, title, subtitle, ctaText, ctaLink, 
   if (title && !items) {
     return (
       <section className="relative bg-background">
-        <div className="relative h-[500px] md:h-[600px]">
+        <div className="relative h-[360px] md:h-[420px]">
           {backgroundImage && (
             <>
               <Image
@@ -86,7 +86,7 @@ export default function HeroSection({ items, title, subtitle, ctaText, ctaLink, 
                 alt={backgroundImage.fields.title || title}
                 fill
                 sizes="100vw"
-                className="object-cover"
+                className="object-cover object-top"
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-b from-primary-red/50 via-primary-red/40 to-primary-red/75" />
@@ -136,14 +136,14 @@ export default function HeroSection({ items, title, subtitle, ctaText, ctaLink, 
 
             return (
               <div key={index} className="flex-[0_0_100%] min-w-0">
-                <div className="relative h-[500px] md:h-[600px]">
+                <div className="relative h-[360px] md:h-[420px]">
                   {imageAsset?.file && (
                     <Image
                       src={`https:${imageAsset.file.url}`}
                       alt={imageAsset.title || itemFields.title || 'Hero image'}
                       fill
                       sizes="100vw"
-                      className="object-cover"
+                      className="object-cover object-top"
                       priority={index === 0}
                     />
                   )}
