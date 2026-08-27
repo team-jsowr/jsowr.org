@@ -4,9 +4,9 @@ This doc exists so anyone (human or AI) picking up this project later has contex
 
 ## Background
 
-The Jain Society of Waterloo Region's current live site (https://jsowr.org) was built by someone no longer involved, and nobody on the team has working knowledge of it or credentials to change it. As of 2026-07, the old site renders almost no crawlable content even through a JS-rendering scraper — it appears to be a mostly-empty/minimal SPA. There is no known CMS export or admin access to it yet. The plan is **not** a lift-and-shift migration; it's a rebuild where real content gets added incrementally as the org provides it.
+The Jain Society of Waterloo Region's original live site was built by someone no longer involved, and nobody on the team had working knowledge of it or credentials to change it. As of 2026-07, that old site rendered almost no crawlable content even through a JS-rendering scraper — it appeared to be a mostly-empty/minimal SPA, with no known CMS export or admin access. The plan was **not** a lift-and-shift migration; it was a rebuild where real content gets added incrementally as the org provides it.
 
-A rebuild is already in progress in this repo, deployed to Netlify for preview, with the intent to eventually point the `jsowr.org` domain (registered/managed at Hostinger) at it once it's ready.
+**That rebuild is what `https://jsowr.org` now serves.** The domain has been cut over to this Netlify deployment (confirmed 2026-08-27 via `server: Netlify` response headers on `jsowr.org` directly) — the old site is gone, this repo *is* the live jsowr.org now. `jsowr.netlify.app` still works too (same deployment, Netlify's default subdomain alongside the custom domain).
 
 ## Stack
 
@@ -15,7 +15,7 @@ A rebuild is already in progress in this repo, deployed to Netlify for preview, 
 - **CMS**: Contentful (headless), space alias "Blank", environment `master`
 - **Package manager**: pnpm (`pnpm@10.24.0`, see `packageManager` in package.json)
 - **Hosting/CI**: Netlify — builds via `pnpm build`, publishes `.next` (see `netlify.toml`). Connected to GitHub repo `team-jsowr/jsowr.org`, auto-deploys on push (see [DEPLOYMENT.md](./DEPLOYMENT.md) for branch/build-minute considerations).
-- **Domain**: `jsowr.org` is registered/managed through Hostinger. Not yet pointed at Netlify — the live site and the Netlify preview (`jsowr.netlify.app`) are currently separate.
+- **Domain**: `jsowr.org` is registered/managed through Hostinger, and **now points at this Netlify deployment** (cut over as of 2026-08-27 — see Background above). `jsowr.netlify.app` still resolves too, same site.
 
 ## Visual theme: "Heritage Maroon & Gold"
 
@@ -33,17 +33,22 @@ There is no `tailwind.config.ts` — it existed in the original scaffold with st
 app/
   [[...slug]]/page.tsx     # Catch-all: renders a Contentful "Page" entry by slug, section by section
   events/page.tsx          # Events listing (explicit route — wins over the catch-all for exact match)
-  events/[slug]/page.tsx   # Single event detail
-  team/page.tsx            # Team/committee listing
+  events/[slug]/page.tsx   # Single event detail; also splits multi-day schedules into per-day cards
+  team/page.tsx            # Committee listing
+  board/page.tsx           # Board of Directors listing (shares MemberGrid + teamMember entries with team/)
   layout.tsx                # Fetches Site Settings, renders Navbar + Footer around every page
+  not-found.tsx              # Themed 404 page
+  sitemap.ts, robots.ts       # Dynamic sitemap (pulls real Page slugs from Contentful) + robots.txt
+  icon.png                    # Favicon, generated from the real logo
   _components/
     Navbar.tsx, Footer.tsx  # Driven by Contentful "Site Settings" (nav items, socials, contact info)
     sections/                # Renderers for each Contentful "section" content type used by the page builder
     ui/                       # Generic shadcn-style primitives (Button, Card, Switch)
     EventCard.tsx
+    MemberGrid.tsx            # Shared card grid for both team/ and board/ (avatar/initials, name, role, contact icons)
 lib/
   contentful.ts             # Contentful Delivery API client (read-only)
-  contentful-api.ts         # Typed fetch helpers (getPageBySlug, getEvents, getTeamMembers, getSiteSettings, ...)
+  contentful-api.ts         # Typed fetch helpers (getPageBySlug, getEvents, getCommitteeMembers, getBoardMembers, getSiteSettings, ...)
   rich-text.tsx              # Shared Contentful rich-text -> React renderer, used by ContentSection and event detail
 types/contentful.ts          # Hand-written TS types mirroring the Contentful content model (kept in sync manually)
 ```
@@ -60,22 +65,33 @@ A Contentful `Page` entry has a `sections` array that can mix content types. `ap
 
 `Event` and `Team Member` are **not** page-builder sections — they're standalone content types rendered by their own dedicated routes (`/events`, `/events/[slug]`, `/team`), added 2026-07-11. Before that, these content types existed in Contentful and had fetch helpers in `lib/contentful-api.ts`, but nothing on the front end actually displayed them.
 
-## Content status (as of 2026-07-11)
+## Content status (as of 2026-08-27)
 
-Live pages: Home, About Us (`/about-us`), Place of Worship (`/about-us/place-of-worship`, coming-soon placeholder), Committee/Team (`/team`, 9 members), Contact Us (`/contact-us`), Activities & Programs (`/activities`). All built from real copy/data supplied by the org — nothing fabricated, and old-site content was deliberately not reused (see below).
+Live pages: Home, About Us (`/about-us`), Place of Worship (`/about-us/place-of-worship`, coming-soon placeholder, currently **unlinked from the nav** — see below), Committee/Team (`/team`, 9 members, 8 with real photos), Board of Directors (`/board`, added 2026-08, 5 members — Anand Shah, Jignesh Shah, and Dhara Vora also sit on Committee and share the same `teamMember` entries, see `docs/CONTENT_MODEL.md`), Contact Us (`/contact-us`), Activities & Programs (`/activities`). All built from real copy/data supplied by the org — nothing fabricated, and old-site content was deliberately not reused.
 
-`/events` has a 12-photo general community gallery (`gallerySection` titled "Events Gallery", fetched directly by title rather than through the page-builder — see `docs/CONTENT_MODEL.md`) but no dated `Event` entries yet. The org has specific dated occurrences (Summer Picnic, Annual General Meeting, etc.) they'll supply dates for later; the general list of recurring religious activities/programs lives on `/activities` instead, since those aren't single dated events.
+Photos still pending (initials fallback until provided): **Anand Shah** (shows on both Committee and Board) and **Sohil Sheth** (Board only). Parul Sutaria (Board) is intentionally initials-only per the org.
 
-Contentful Management API access is configured (`CONTENTFUL_MANAGEMENT_TOKEN` in `.env.local`) — content changes now happen via one-off Node scripts using `contentful-management`, run with `node --env-file=.env.local <script>` from inside the repo (needed for `node_modules` resolution). These scripts are throwaway/local only, never committed.
+`/events` now has its first real dated event: **Paryushan Mahaparv 2026** (Sept 8–16, 2026), with a full day-by-day schedule sourced from the org's own flyer, rendered as per-day cards (see "Multi-day event schedules" in `docs/CONTENT_MODEL.md`) and a featured image. It also still carries the 12-photo general community gallery (`gallerySection` titled "Events Gallery", fetched directly by title — see `docs/CONTENT_MODEL.md`).
+
+**Nav changes since launch**: "Place of Worship" was removed from the About Us dropdown per org request (2026-08) — the page itself is still published and reachable by direct URL, just not linked from the menu. A **"Membership"** top-level nav item was requested but not yet built — still waiting on the org for what that page should actually say (benefits, fees, how to apply) before creating it, to avoid shipping a nav link to placeholder content.
+
+Contentful Management API access is configured (`CONTENTFUL_MANAGEMENT_TOKEN` in `.env.local`) — content changes happen via one-off Node scripts using `contentful-management`, run with `node --env-file=.env.local <script>` from inside the repo (needed for `node_modules` resolution). These scripts are throwaway/local only, never committed.
 
 **Photo handoff workflow**: `incoming-images/` at the repo root (gitignored except `.gitkeep`) is a drop folder — the org copies photo files in there, then they get uploaded to Contentful via a one-off script using `client.asset.createFromFiles` + `processForAllLocales` + `publish`, and the local copies are deleted once safely in Contentful. Never commit actual image files here; Contentful's Media library is the source of truth for assets, not the git repo.
 
-**Deployed**: `rebuild/site-migration` was merged into `main` and confirmed live on `jsowr.netlify.app` as of 2026-07-11. That merge hit a Netlify plan restriction on the way (see "Git contributor limit" in [DEPLOYMENT.md](./DEPLOYMENT.md)) — worth reading before merging again if a new contributor's commits start failing to build. Per the org's request, everything since that merge (the Heritage Maroon & Gold theme, gallery lightbox navigation, favicon/404/sitemap/robots.txt/Open Graph metadata, hero image randomization, Donate button hiding) has stayed on `rebuild/site-migration` and is **not live** — only merge to `main` when explicitly asked.
+**Cropping lessons learned** (worth reading before processing more photos):
+- Sharp's `sharp.strategy.attention` (saliency-based auto-crop) works well most of the time but **can get fooled by busy backgrounds** — it picked autumn leaves over a person's face once, and a lake's rock/water texture over a face another time, both resulting in the face being nearly cropped out. Always render a preview crop and visually check it before uploading; don't trust attention-crop blindly for portraits with cluttered backgrounds.
+- A **tall portrait photo cropped into a very wide hero banner** (the event detail page's hero is full-viewport-width but only ~360-420px tall, so on wide monitors it's a ~4.5:1 crop) is a much bigger mismatch than a circular avatar crop — both center-crop and attention-crop landed on the wrong region entirely (torso/hands instead of face). Fix was a manually-verified square crop with generous margin around the subject, checked against *both* the extreme-wide desktop ratio and the near-square mobile ratio before committing.
+- **HEIC files can silently arrive corrupted** (decoder errors, suspiciously small file size) — if `sharp` fails to decode one, ask for a JPEG/PNG re-export rather than trying to force it.
+
+**Deployed**: `main` and `rebuild/site-migration` were fully in sync as of 2026-08-27 (see [DEPLOYMENT.md](./DEPLOYMENT.md) for the squash-merge/content-diff caveat), but the Board of Directors work (new `groups`/`boardOrder` fields, `/board` route, `MemberGrid` extraction) landed on `rebuild/site-migration` *after* that sync, and the org explicitly asked not to merge yet — so as of this writing, `/board` and the Committee-page refactor are **not live**, even though the underlying Contentful content (which isn't gated by git) already is. Check `git diff --stat origin/main rebuild/site-migration` before assuming otherwise.
 
 ## Known gaps / next steps
 
-- Old site content couldn't be scraped (renders empty even via headless browser) — content is being supplied directly by the org as it becomes available, not migrated verbatim.
-- `jsowr.org` DNS still points away from Netlify; cutover is a future step once the rebuild is content-complete and approved.
+- Old site content couldn't be scraped (renders empty even via headless browser) — content was supplied directly by the org as it became available, not migrated verbatim. Moot now that the domain has cut over (see Background), but explains why nothing was ported from it.
+- **Membership page** — top-level nav item requested by the org, not yet built. Needs content: benefits, fees, how to apply, eligibility.
+
+**`jsowr.org` is a real public domain now, not just a preview** — merging `rebuild/site-migration` to `main` puts changes in front of actual visitors, not a Netlify subdomain nobody's indexed yet. Doesn't change the workflow (still: batch on the feature branch, merge only when asked), but worth remembering the stakes are higher than they were pre-cutover — a broken merge is now a broken live site, not a broken preview.
 
 ### Backlog (explicitly deferred, "good to have" per org feedback 2026-07-11)
 

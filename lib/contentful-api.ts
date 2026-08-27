@@ -111,17 +111,34 @@ export async function getEventBySlug(slug: string): Promise<Event | null> {
   }
 }
 
-// Get all team members
-export async function getTeamMembers(): Promise<TeamMember[]> {
+// Get committee members (teamMember entries tagged with the "Committee" group)
+export async function getCommitteeMembers(): Promise<TeamMember[]> {
   try {
     const entries = await contentfulClient.getEntries({
       content_type: 'teamMember',
+      'fields.groups[in]': 'Committee',
       order: ['fields.order'],
     });
 
     return entries.items.map((item) => parseEntry<TeamMember>(item));
   } catch (error) {
-    console.error('Error fetching team members:', error);
+    console.error('Error fetching committee members:', error);
+    return [];
+  }
+}
+
+// Get board of directors members (teamMember entries tagged with the "Board of Directors" group)
+export async function getBoardMembers(): Promise<TeamMember[]> {
+  try {
+    const entries = await contentfulClient.getEntries({
+      content_type: 'teamMember',
+      'fields.groups[in]': 'Board of Directors',
+      order: ['fields.boardOrder'],
+    });
+
+    return entries.items.map((item) => parseEntry<TeamMember>(item));
+  } catch (error) {
+    console.error('Error fetching board members:', error);
     return [];
   }
 }
