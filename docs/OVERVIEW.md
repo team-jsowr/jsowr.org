@@ -4,9 +4,9 @@ This doc exists so anyone (human or AI) picking up this project later has contex
 
 ## Background
 
-The Jain Society of Waterloo Region's current live site (https://jsowr.org) was built by someone no longer involved, and nobody on the team has working knowledge of it or credentials to change it. As of 2026-07, the old site renders almost no crawlable content even through a JS-rendering scraper — it appears to be a mostly-empty/minimal SPA. There is no known CMS export or admin access to it yet. The plan is **not** a lift-and-shift migration; it's a rebuild where real content gets added incrementally as the org provides it.
+The Jain Society of Waterloo Region's original live site was built by someone no longer involved, and nobody on the team had working knowledge of it or credentials to change it. As of 2026-07, that old site rendered almost no crawlable content even through a JS-rendering scraper — it appeared to be a mostly-empty/minimal SPA, with no known CMS export or admin access. The plan was **not** a lift-and-shift migration; it was a rebuild where real content gets added incrementally as the org provides it.
 
-A rebuild is already in progress in this repo, deployed to Netlify for preview, with the intent to eventually point the `jsowr.org` domain (registered/managed at Hostinger) at it once it's ready.
+**That rebuild is what `https://jsowr.org` now serves.** The domain has been cut over to this Netlify deployment (confirmed 2026-08-27 via `server: Netlify` response headers on `jsowr.org` directly) — the old site is gone, this repo *is* the live jsowr.org now. `jsowr.netlify.app` still works too (same deployment, Netlify's default subdomain alongside the custom domain).
 
 ## Stack
 
@@ -15,7 +15,7 @@ A rebuild is already in progress in this repo, deployed to Netlify for preview, 
 - **CMS**: Contentful (headless), space alias "Blank", environment `master`
 - **Package manager**: pnpm (`pnpm@10.24.0`, see `packageManager` in package.json)
 - **Hosting/CI**: Netlify — builds via `pnpm build`, publishes `.next` (see `netlify.toml`). Connected to GitHub repo `team-jsowr/jsowr.org`, auto-deploys on push (see [DEPLOYMENT.md](./DEPLOYMENT.md) for branch/build-minute considerations).
-- **Domain**: `jsowr.org` is registered/managed through Hostinger. Not yet pointed at Netlify — the live site and the Netlify preview (`jsowr.netlify.app`) are currently separate.
+- **Domain**: `jsowr.org` is registered/managed through Hostinger, and **now points at this Netlify deployment** (cut over as of 2026-08-27 — see Background above). `jsowr.netlify.app` still resolves too, same site.
 
 ## Visual theme: "Heritage Maroon & Gold"
 
@@ -88,10 +88,10 @@ Contentful Management API access is configured (`CONTENTFUL_MANAGEMENT_TOKEN` in
 
 ## Known gaps / next steps
 
-- Old site content couldn't be scraped (renders empty even via headless browser) — content is being supplied directly by the org as it becomes available, not migrated verbatim.
-- `jsowr.org` DNS still points away from Netlify; cutover is a future step once the rebuild is content-complete and approved.
+- Old site content couldn't be scraped (renders empty even via headless browser) — content was supplied directly by the org as it became available, not migrated verbatim. Moot now that the domain has cut over (see Background), but explains why nothing was ported from it.
 - **Membership page** — top-level nav item requested by the org, not yet built. Needs content: benefits, fees, how to apply, eligibility.
-- Photos still pending for **Anand Shah** and **Sohil Sheth** (see "Content status" above).
+
+**`jsowr.org` is a real public domain now, not just a preview** — merging `rebuild/site-migration` to `main` puts changes in front of actual visitors, not a Netlify subdomain nobody's indexed yet. Doesn't change the workflow (still: batch on the feature branch, merge only when asked), but worth remembering the stakes are higher than they were pre-cutover — a broken merge is now a broken live site, not a broken preview.
 
 ### Backlog (explicitly deferred, "good to have" per org feedback 2026-07-11)
 

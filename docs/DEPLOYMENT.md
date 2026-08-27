@@ -56,4 +56,4 @@ This token is only ever used from local one-off Node scripts (not part of the Ne
 
 ## Hostinger
 
-`jsowr.org` domain (and DNS) is managed at Hostinger. It currently does **not** point at Netlify — the live `jsowr.org` and the in-progress `jsowr.netlify.app` are separate deployments. Pointing the domain at Netlify (custom domain + DNS cutover) is a deliberate future step, not something to do automatically once code merges to `main`.
+`jsowr.org` domain (registration/DNS) is managed at Hostinger. **DNS now points at this Netlify site** (cutover confirmed 2026-08-27, checked via `server: Netlify` response headers when fetching `https://jsowr.org` directly). `jsowr.org` and `jsowr.netlify.app` are the same deployment now, not separate sites.
