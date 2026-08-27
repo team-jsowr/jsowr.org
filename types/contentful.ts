@@ -98,6 +98,10 @@ export interface TeamMember {
   email?: string;
   phone?: string;
   order?: number;
+  /** Which listing page(s) this person appears on - e.g. "Committee", "Board of Directors". A person can be in both. */
+  groups?: string[];
+  /** Separate sort order used only on the Board of Directors page, independent of `order` (which drives the Committee page). */
+  boardOrder?: number;
 }
 
 export interface HeroCarouselItem {
